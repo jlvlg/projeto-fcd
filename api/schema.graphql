@@ -1,0 +1,143 @@
+type Query {
+  teams(ids: [Int], conference: String): [Team!]!
+}
+
+type Team {
+  id: Int!
+  full_name: String!
+  abbreviation: String!
+  conference: String
+  rank: Int
+  stats(seasons: [String]!): [TeamStats!]!
+  games(seasons: [String]!, opponentIds: [Int]): [Game!]!
+  players(ids: [Int]): [Player!]!
+}
+
+type TeamStats {
+  season: String!
+  wins: Int!
+  winsHome: Int!
+  winsRoad: Int!
+  losses: Int!
+  lossesHome: Int!
+  lossesRoad: Int!
+  scorePerGame: Float!
+  assistsPerGame: Float!
+  reboundsPerGame: Float!
+  threePointFieldGoals: Int!
+  rebounds: Int!
+  offensiveRebounds: Int!
+  defensiveRebounds: Int!
+  score: Int!
+  twoPointFieldGoals: Int!
+  freeThrows: Int!
+  steals: Int!
+  blocksPerGame: Float!
+  turnoversPerGame: Float!
+  foulsPerGame: Float!
+}
+
+type Game {
+  id: String!
+  season: String!
+  date: String!
+  location: String!
+  opponent: Team!
+  result: String!
+  minutesPlayed: Float!
+  score: Int!
+  fieldGoals: Int!
+  fieldGoalsAttempted: Int!
+  fieldGoalsPercentage: Float!
+  threePointFieldGoals: Int!
+  threePointFieldGoalsAttempted: Int!
+  threePointFieldGoalsPercentage: Float!
+  freeThrows: Int!
+  freeThrowsAttempted: Int!
+  freeThrowsPercentage: Float!
+  offensiveRebounds: Int!
+  defensiveRebounds: Int!
+  rebounds: Int!
+  assists: Int!
+  steals: Int!
+  blocks: Int!
+  turnovers: Int!
+  fouls: Int!
+  teamScore: Int!
+  opponentScore: Int!
+  plusMinus: Int!
+}
+
+type Player {
+  id: Int!
+  name: String!
+  height: Float!
+  weight: Float!
+  age: Int!
+  experience: Int!
+  position: String!
+  college: String
+  salary: Float
+  games(seasons: [String]!, opponentIds: [Int]): [Game!]!
+  stats(seasons: [String]!): [PlayerStats!]!
+  ai: AI!
+}
+
+type PlayerStats {
+  season: String!
+  gamesPlayed: Int!
+  score: Int!
+  meanscore: Float!
+  assists: Int!
+  meanAssists: Float!
+  rebounds: Int!
+  meanRebounds: Float!
+  minutesPlayed: Float!
+}
+
+type AI {
+  gumbel(column: String!, x: Int, start: Int, end: Int): Gumbel!
+  proportions(column: String!, x: Int, start: Int, end: Int): Proportions!
+  linearRegression(column: String!): Regression!
+  logisticRegression(column: String!): Regression!
+}
+
+type Gumbel {
+  probGreaterThan: [DataPoint!]!
+  probLessThan: [DataPoint!]!
+  probGreaterThanOrEqualTo: [DataPoint!]!
+  probLessThanOrEqualTo: [DataPoint!]!
+}
+
+type Proportions {
+  proportionGreaterThan: [DataPoint!]!
+  proportionLessThan: [DataPoint!]!
+  proportionGreaterThanOrEqualTo: [DataPoint!]!
+  proportionLessThanOrEqualTo: [DataPoint!]!
+}
+
+type Regression {
+  greaterThanMean: AIResult!
+  lessThanOrEqualToMean: AIResult!
+  greaterThanMedian: AIResult!
+  lessThanOrEqualToMedian: AIResult!
+  greaterThanMode: AIResult!
+  lessThanOrEqualToMode: AIResult!
+  greaterThanMax: AIResult!
+  lessThanOrEqualToMax: AIResult!
+  greaterThanMin: AIResult!
+  lessThanOrEqualToMin: AIResult!
+}
+
+type DataPoint {
+  x: Float!
+  y: Float!
+}
+
+type AIResult {
+  y: Float!
+  truePositive: Int!
+  trueNegative: Int!
+  falsePositive: Int!
+  falseNegative: Int!
+}
