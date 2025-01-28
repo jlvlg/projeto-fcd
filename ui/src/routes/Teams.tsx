@@ -1,7 +1,9 @@
 import { useQuery } from "@apollo/client";
+import { Box } from "@mui/material";
 import { gql } from "__generated__";
 import Table from "components/table";
 import { useMemo } from "react";
+import { useNavigate } from "react-router";
 
 type Props = {};
 
@@ -17,18 +19,23 @@ const GET_TEAMS = gql(`
 `);
 
 const TABLE_HEADERS = [
-  {
-    label: "Conferência Oeste",
-    children: [{ label: "Rank" }, { label: "Nome" }, { label: "ID" }],
-  },
-  {
-    label: "Conferência Leste",
-    children: [{ label: "Rank" }, { label: "Nome" }, { label: "ID" }],
-  },
+  [
+    {
+      label: "Conferência Oeste",
+      children: [{ label: "Rank" }, { label: "Nome" }, { label: "ID" }],
+    },
+  ],
+  [
+    {
+      label: "Conferência Leste",
+      children: [{ label: "Rank" }, { label: "Nome" }, { label: "ID" }],
+    },
+  ],
 ];
 
 export default function TeamsPage({}: Props) {
   const { data } = useQuery(GET_TEAMS);
+  const navigate = useNavigate();
 
   const columns = useMemo(() => {
     const westRank: (string | number)[] = [];
@@ -50,8 +57,24 @@ export default function TeamsPage({}: Props) {
       }
     });
 
-    return [westRank, westName, westId, eastRank, eastName, eastId];
+    return [
+      [westRank, westName, westId],
+      [eastRank, eastName, eastId],
+    ];
   }, [data]);
 
-  return <Table headers={TABLE_HEADERS} columns={columns} />;
+  return (
+    <Box sx={{ display: "flex", gap: 2 }}>
+      <Table
+        headers={TABLE_HEADERS[0]}
+        columns={columns[0]}
+        onClickRow={(row) => navigate(`/teams/${row[2]}`)}
+      />
+      <Table
+        headers={TABLE_HEADERS[1]}
+        columns={columns[1]}
+        onClickRow={(row) => navigate(`/teams/${row[2]}`)}
+      />
+    </Box>
+  );
 }

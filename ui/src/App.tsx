@@ -1,5 +1,5 @@
-import { Home } from "@mui/icons-material";
-import { AppBar, Toolbar } from "@mui/material";
+import { Box } from "@mui/material";
+import NavBar from "components/navbar";
 import { Outlet } from "react-router";
 
 type Props = {};
@@ -7,12 +7,10 @@ type Props = {};
 export default function App({}: Props) {
   return (
     <>
-      <AppBar position="sticky">
-        <Toolbar>
-          <Home />
-        </Toolbar>
-      </AppBar>
-      <Outlet />
+      <NavBar />
+      <Box sx={{ padding: 5 }}>
+        <Outlet />
+      </Box>
     </>
   );
 }

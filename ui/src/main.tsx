@@ -22,6 +22,7 @@ createRoot(document.getElementById("root")!).render(
         <BrowserRouter>
           <Routes>
             <Route element={<App />}>
+              <Route index element={<div></div>} />
               <Route path="teams" element={<TeamsPage />}></Route>
             </Route>
           </Routes>
