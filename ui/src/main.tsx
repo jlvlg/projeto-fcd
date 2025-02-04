@@ -6,6 +6,9 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import App from "./App.tsx";
 import "./globals.css";
 import TeamsPage from "./routes/Teams.tsx";
+import TeamDetails from "./routes/TeamDetails.tsx";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, RadialLinearScale, PointElement, LineElement } from 'chart.js';
+ChartJS.register(  CategoryScale,   LinearScale,  BarElement,  ArcElement,  RadialLinearScale,  PointElement,  LineElement,  Title,  Tooltip,  Legend);
 
 const client = new ApolloClient({
   uri: "http://localhost:8000/graphql",
@@ -24,6 +27,7 @@ createRoot(document.getElementById("root")!).render(
             <Route element={<App />}>
               <Route index element={<div></div>} />
               <Route path="teams" element={<TeamsPage />}></Route>
+              <Route path="/teams/:id" element={<TeamDetails />} />
             </Route>
           </Routes>
         </BrowserRouter>
