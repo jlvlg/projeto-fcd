@@ -176,6 +176,7 @@ schema = make_executable_schema(
     aitype,
     gumbel,
     proportions,
+    gamregression,
     convert_names_case=True,
 )
 
