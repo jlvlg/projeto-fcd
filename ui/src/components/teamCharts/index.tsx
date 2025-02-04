@@ -7,12 +7,12 @@ import { CircularProgress, Typography, Box } from "@mui/material";
 import { useTeamDetails } from "hooks/useTeamDetails";
 import { Team } from "types/Types";
 
-export default function TeamCharts() {
+export default function TeamCharts({selectedSeason} : {selectedSeason: number}) {
     const { data, loading, error } = useTeamDetails();
     if (loading) return <CircularProgress />;
     if (error) return <Typography color="error">Erro ao carregar dados.</Typography>;
     const team: Team | null = data?.teams?.[0] ?? null;
-    const totalStats = team?.stats?.[0] ?? null;
+    const totalStats = team?.stats?.[selectedSeason] ?? null;
     const chartOptions = { responsive: true, maintainAspectRatio: false };
 
     const barData = {
