@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import data
 import ai
 import numpy as np
+import uvicorn
 
 data.save_data()
 ai.get_models(202696)
@@ -41,7 +42,7 @@ def resolve_team_stats(team, *_, seasons):
 
 @team.field("games")
 def resolve_team_games(team, *_, seasons, opponent_ids=None):
-    games = data.get_team_games(team["id"], seasons).to_dict(orient="records")
+    games = data.get_team_games(team["id"], seasons)
     if opponent_ids:
         games = games[games["opponent"].apply(lambda x: x["id"] in opponent_ids)]
     return games.to_dict(orient="records")
@@ -158,3 +159,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.mount("/graphql", GraphQL(schema, debug=True))
+
+if __name__ == "__main__":
+    uvicorn.run("main:app")
