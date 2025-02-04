@@ -1,4 +1,4 @@
-from scipy.stats import gumbel_r
+from scipy.stats import gumbel_r, poisson
 import pandas as pd
 import data
 from sklearn.linear_model import LinearRegression, LogisticRegression
@@ -9,6 +9,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
 import numpy as np
 from models import LogisticRegressionWithSingleClassHandling
+from pygam import LinearGAM, PoissonGAM
 
 models = {}
 
@@ -34,6 +35,10 @@ def get_models(player_id):
         },
         "linear": train_linear_regression(player["games"]),
         "logistic": train_logistic_regression(player["games"]),
+        "gam": {
+            "linear": train_linear_gam(player["games"]),
+            "poisson": train_poisson_gam(player["games"]),
+        },
     }
 
     models[player_id] = new
@@ -151,6 +156,16 @@ def train_linear_regression(data):
     return train_regression(LinearRegression, data, targets)
 
 
+def train_linear_gam(data):
+    targets = ["score", "assists", "rebounds"]
+    return train_regression(LinearGAM, data, targets)
+
+
+def train_poisson_gam(data):
+    targets = ["score", "assists", "rebounds"]
+    return train_regression(PoissonGAM, data, targets)
+
+
 def linear_helper(y_pred, y_true, op):
     comparison = op(y_pred)
     cm = confusion_matrix(op(y_true), comparison)
@@ -163,8 +178,7 @@ def linear_helper(y_pred, y_true, op):
     }
 
 
-def linear(player_id, column):
-    model = get_models(player_id)["linear"]
+def regression(model, player_id, column):
     y_pred = model[f"model_{column}"].predict(model["X_test"])
     y_true = model[f"y_{column}_test"]
     stats = get_models(player_id)["data"]["stats"][stats["season"] == "career"]
@@ -200,6 +214,11 @@ def linear(player_id, column):
             y_pred, y_true, lambda x: x <= stats[f"min_{column}"]
         ),
     }
+
+
+def gam_prob(model, column, x):
+    y_pred = model[f"model_{column}"].predict(model["X_test"][-1])[0]
+    return poisson.pmf(x, y_pred)
 
 
 def logistic(player_id, column):

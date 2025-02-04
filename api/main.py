@@ -20,6 +20,7 @@ player = ObjectType("Player")
 aitype = ObjectType("AI")
 gumbel = ObjectType("Gumbel")
 proportions = ObjectType("Proportions")
+gamregression = ObjectType("GAMRegression")
 
 
 @query.field("teams")
@@ -94,7 +95,29 @@ def resolve_proportions(aiparent, *_, column, x=None, start=None, end=None):
 
 @aitype.field("linearRegression")
 def resolve_linear_regression(aiparent, *_, column):
-    return ai.linear(aiparent["player_id"], column)
+    return ai.regression(
+        ai.get_models(aiparent["player_id"])["linear"], aiparent["player_id"], column
+    )
+
+
+@aitype.field("linearGAM")
+def resolve_linear_gam(aiparent, *_, column):
+    model = ai.get_models(aiparent["player_id"])["gam"]["linear"]
+    return ai.regression(
+        model,
+        aiparent["player_id"],
+        column,
+    ) | {"column": column, "model": model}
+
+
+@aitype.field("poissonGAM")
+def resolve_poisson_gam(aiparent, *_, column):
+    model = ai.get_models(aiparent["player_id"])["gam"]["poisson"]
+    return ai.regression(
+        model,
+        aiparent["player_id"],
+        column,
+    ) | {"column": column, "model": model}
 
 
 @aitype.field("logisticRegression")
@@ -138,6 +161,11 @@ def resolve_proportions(proportions, info):
     return [
         {"x": x, "y": count / len(data)} for x, count in zip(X, comparisons.sum(axis=0))
     ]
+
+
+@gamregression.field("probability")
+def resolve_gam_probability(gam, *_, x=None):
+    return ai.gam_prob(gam["model"], gam["column"], x)
 
 
 schema = make_executable_schema(

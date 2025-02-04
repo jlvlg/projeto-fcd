@@ -100,6 +100,8 @@ type AI {
   proportions(column: String!, x: Int, start: Int, end: Int): Proportions!
   linearRegression(column: String!): Regression!
   logisticRegression(column: String!): Regression!
+  linearGAM(column: String!): GAMRegression!
+  poissonGAM(column: String!): GAMRegression!
 }
 
 type Gumbel {
@@ -140,4 +142,9 @@ type AIResult {
   trueNegative: Int!
   falsePositive: Int!
   falseNegative: Int!
+}
+
+type GAMRegression {
+  regression: Regression!
+  probability(x: Int!): Float!
 }
