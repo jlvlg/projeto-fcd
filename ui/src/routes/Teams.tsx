@@ -1,22 +1,12 @@
 import { useQuery } from "@apollo/client";
 import { Box } from "@mui/material";
-import { gql } from "__generated__";
-import Table from "components/table";
+import Table from "components/table/table";
+import { GET_TEAMS } from "queries/getTeams";
 import { useMemo } from "react";
 import { useNavigate } from "react-router";
+import { Team } from "types/Types";
 
 type Props = {};
-
-const GET_TEAMS = gql(`
-  query GetWestTeams {
-    teams {
-      id
-      full_name
-      conference
-      rank
-    }
-  }
-`);
 
 const TABLE_HEADERS = [
   [
@@ -45,7 +35,7 @@ export default function TeamsPage({}: Props) {
     const eastName: (string | number)[] = [];
     const eastId: (string | number)[] = [];
 
-    data?.teams.forEach((team) => {
+    data?.teams.forEach((team: Team) => {
       if (team.conference === "West") {
         westRank.push(team.rank!);
         westName.push(team.full_name);
