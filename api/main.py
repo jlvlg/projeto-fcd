@@ -69,23 +69,27 @@ def resolve_player_stats(player, *_, seasons):
 
 @player.field("ai")
 def resolve_ai(player, *_):
-    return {"player_id": player["id"]}
+    return {"player_id": player["id"], "team_id": player["team_id"]}
 
 
 @aitype.field("gumbel")
 def resolve_gumbel(aiparent, *_, column, x=None, start=None, end=None):
-    loc, scale = ai.get_models(aiparent["player_id"])["gumbel"][column]
+    loc, scale = ai.get_models(aiparent["player_id"], aiparent["team_id"])["gumbel"][
+        column
+    ]
     return {
         "loc": loc,
         "scale": scale,
-        "X": np.array([x]) if x else np.linspace(start, end),
+        "X": np.array([x]) if x else np.linspace(start, end).round().astype(int),
     }
 
 
 @aitype.field("proportions")
 def resolve_proportions(aiparent, *_, column, x=None, start=None, end=None):
     return {
-        "data": ai.get_models(aiparent["player_id"])["data"]["games"][column],
+        "data": ai.get_models(aiparent["player_id"], aiparent["team_id"])["data"][
+            "games"
+        ][column],
         "X": np.array([x]) if x else np.linspace(start, end),
     }
 
@@ -93,33 +97,38 @@ def resolve_proportions(aiparent, *_, column, x=None, start=None, end=None):
 @aitype.field("linearRegression")
 def resolve_linear_regression(aiparent, *_, column):
     return ai.regression(
-        ai.get_models(aiparent["player_id"])["linear"], aiparent["player_id"], column
+        ai.get_models(aiparent["player_id"], aiparent["team_id"])["linear"],
+        aiparent["player_id"],
+        aiparent["team_id"],
+        column,
     )
 
 
 @aitype.field("linearGAM")
 def resolve_linear_gam(aiparent, *_, column):
-    model = ai.get_models(aiparent["player_id"])["gam"]["linear"]
+    model = ai.get_models(aiparent["player_id"], aiparent["team_id"])["gam"]["linear"]
     return ai.regression(
         model,
         aiparent["player_id"],
+        aiparent["team_id"],
         column,
     ) | {"column": column, "model": model}
 
 
 @aitype.field("poissonGAM")
 def resolve_poisson_gam(aiparent, *_, column):
-    model = ai.get_models(aiparent["player_id"])["gam"]["poisson"]
+    model = ai.get_models(aiparent["player_id"], aiparent["team_id"])["gam"]["poisson"]
     return ai.regression(
         model,
         aiparent["player_id"],
+        aiparent["team_id"],
         column,
     ) | {"column": column, "model": model}
 
 
 @aitype.field("logisticRegression")
 def resolve_logistic_regression(aiparent, *_, column):
-    return ai.logistic(aiparent["player_id"], column)
+    return ai.logistic(aiparent["player_id"], aiparent["team_id"], column)
 
 
 @gumbel.field("probGreaterThan")
@@ -141,7 +150,6 @@ def resolve_gumbel(gumbel, info):
 @proportions.field("proportionLessThanOrEqualTo")
 @proportions.field("proportionLessThan")
 def resolve_proportions(proportions, info):
-    print(proportions)
     data = np.array(proportions["data"])
     X = proportions["X"]
 

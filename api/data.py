@@ -7,6 +7,7 @@ import requests
 from pathlib import Path
 from unidecode import unidecode
 from time import sleep
+import shutil
 
 
 def get_teams():
@@ -246,7 +247,7 @@ def get_player_games(player_id, team_id, seasons, opponent_object=True):
     games = get_games(seasons, player_id=player_id, opponent_object=opponent_object)
     sleep(1)
     team_games = get_team_games(team_id, seasons, opponent_object=False)
-    games = games.merge(team_games, on="id", suffixes=("", "_DROP"))
+    games = games.merge(team_games, on="id", how="left", suffixes=("", "_DROP"))
     return games.loc[:, ~games.columns.str.contains("_DROP")]
 
 
@@ -273,9 +274,9 @@ def get_player_stats(player_id, seasons):
     return data[data["season"].isin(seasons + ["career"])]
 
 
-def save_player_data(player_id):
+def save_player_data(player_id, team_id):
     games = get_player_games(
-        player_id, 1610612741, ["2023-24", "2024-25"], opponent_object=False
+        player_id, team_id, ["2023-24", "2024-25"], opponent_object=False
     )
     games.to_csv(f"cache/player/{player_id}_games.csv", index=False)
 
@@ -353,7 +354,7 @@ def save_player_data(player_id):
 
 
 def save_data():
-    # shutil.rmtree("cache")
+    shutil.rmtree("cache", ignore_errors=True)
     Path("cache/team").mkdir(parents=True, exist_ok=True)
     Path("cache/player").mkdir(parents=True, exist_ok=True)
     get_teams().to_csv("cache/teams.csv", index=False)
