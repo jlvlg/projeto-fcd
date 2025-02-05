@@ -1,14 +1,8 @@
 import { useQuery } from "@apollo/client";
-import {
-  Box,
-  Typography,
-  Card,
-  CircularProgress,
-  Divider,
-  Stack,
-} from "@mui/material";
+import { Box,Typography, Card,Divider,  Stack,} from "@mui/material";
 import { BoxPlot } from "components/charts/BoxPlot";
 import { DistributionChart } from "components/charts/DistributionChart";
+import { LoadingComponent } from "components/loading";
 import { PlayerStatsTable } from "components/playerStatsCareerTable";
 import TeamPlayersTable from "components/teamPlayers";
 import { GET_PLAYER_STATS } from "queries/getPlaterStats";
@@ -32,7 +26,7 @@ export default function PlayerStatisticsDashboard({
   const { loading, error, data } = useQuery(GET_PLAYER_STATS, {
     variables: { teamId, playerId, season },
   });
-  if (loading) return <CircularProgress />;
+  if (loading) return <LoadingComponent/>;
   if (error)
     return <Typography color="error">Erro ao carregar dados</Typography>;
 

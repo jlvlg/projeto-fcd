@@ -1,9 +1,9 @@
 import { useQuery } from "@apollo/client";
 import { Card } from "@mui/material";
+import { Game } from "__generated__/graphql";
 import Table from "components/table";
 import { transpose } from "components/teamTables";
 import { GET_PLAYER_STATS } from "queries/getPlaterStats";
-import { Game } from "types/Types";
 
 type PlayerStatsTableProps = {
   teamId: number;
@@ -25,11 +25,11 @@ export const PlayerStatsTable = ({ teamId, playerId, season }: PlayerStatsTableP
   const currentSeasonStats = player.stats[0] || {};
   const totalGamesCurrentSeason = currentSeasonStats?.gamesPlayed || 0;
 
-  const totalMinutesPlayedCurrentSeason = player.games.reduce(
-    (acc: number, game: Game) => acc + (game.minutesPlayed || 0),
+  const totalMinutesPlayedCurrentSeason = (player.games as Game[])?.reduce(
+    (acc, game) => acc + (game.minutesPlayed ?? 0),
     0
   );
-
+ 
   const meanMinutesPlayedCurrentSeason =
     totalGamesCurrentSeason > 0 ? totalMinutesPlayedCurrentSeason / totalGamesCurrentSeason : 0;
 

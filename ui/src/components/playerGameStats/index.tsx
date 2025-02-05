@@ -1,6 +1,5 @@
 import { useQuery } from "@apollo/client";
 import {
-  CircularProgress,
   Select,
   MenuItem,
   Box,
@@ -10,6 +9,8 @@ import { useState } from "react";
 import { GET_PLAYER_GAME_STATS } from "queries/getPlayerGameStats";
 import Table from "components/table";
 import { transpose } from "components/teamTables";
+import { Game } from "__generated__/graphql";
+import { LoadingComponent } from "components/loading";
 
 interface Props {
   id: string | undefined;
@@ -40,7 +41,7 @@ const PlayerGameStatsTable = ({
     return <p>Erro: ID do time ou do jogador não foi fornecido.</p>;
   }
 
-  if (loading) return <CircularProgress />;
+  if (loading) return <LoadingComponent />;
   if (error) return <p>Error: {error.message}</p>;
 
   const players = data?.teams?.[0]?.players || [];
@@ -81,29 +82,6 @@ const PlayerGameStatsTable = ({
         ["Jogos Fora", totalAwayGames],
       ];
 
-  const selectedOpponentHomeGames = games.filter(game => game.location === "home" && game.opponent.full_name === selectedOpponent).length;
-  const selectedOpponentAwayGames = games.filter(game => game.location === "road" && game.opponent.full_name === selectedOpponent).length;
-
-  const summaryHeaders = selectOpponent
-    ? [
-        { label: "Categoria" },
-        { label: "Total" },
-        { label: `Contra ${selectedOpponent || "-"}` },
-      ]
-    : [
-        { label: "Categoria" },
-        { label: "Total" },
-      ];
-
-  const summaryColumns = selectOpponent
-    ? [
-        ["Jogos em Casa", totalHomeGames, selectedOpponentHomeGames],
-        ["Jogos Fora", totalAwayGames, selectedOpponentAwayGames],
-      ]
-    : [
-        ["Jogos em Casa", totalHomeGames],
-        ["Jogos Fora", totalAwayGames],
-      ];
 
   const headers = [
     { label: "Data do Jogo" },

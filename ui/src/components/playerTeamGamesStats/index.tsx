@@ -1,6 +1,5 @@
 import { useQuery } from "@apollo/client";
 import {
-  CircularProgress,
   Select,
   MenuItem,
   Box,
@@ -11,6 +10,7 @@ import { GET_PLAYER_GAME_STATS } from "queries/getPlayerGameStats";
 import Table from "components/table";
 import BarChart from "components/charts/BarChart";
 import PieChart from "components/charts/PieChart";
+import { LoadingComponent } from "components/loading";
 
 interface Props {
   id: string | undefined;
@@ -45,7 +45,7 @@ const PlayerTeamGamesStats = ({ id, playerid, season }: Props) => {
     return <p>Erro: ID do time ou do jogador não foi fornecido.</p>;
   }
 
-  if (loading) return <CircularProgress />;
+  if (loading) return <LoadingComponent />;
   if (error) return <p>Error: {error.message}</p>;
 
   const totalHomeGames = games.filter(

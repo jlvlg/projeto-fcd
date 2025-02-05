@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, CircularProgress } from "@mui/material";
+import { Box,} from "@mui/material";
 import { useQuery } from "@apollo/client";
 import SidebarMenu from "components/menu";
 import PlayerGameStatsTable from "components/playerGameStats";
 import { GET_PLAYER_DETAILS } from "queries/getPlayerDetails";
 import PlayerTeamGamesStats from "components/playerTeamGamesStats";
 import PlayerStatistics from "components/playerStatistics";
+import ExtremeAnalysis from "components/gumbelVisualization";
+import { LoadingComponent } from "components/loading";
 
 export const PlayerDetails = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -19,6 +21,8 @@ export const PlayerDetails = () => {
     "Dados das Partidas",
     "Partidas Específicas",
     "Jogos Realizados",
+    "Análise de Gumbel",
+    "Regressão Linear"
   ];
   const drawerWidth = 240;
 
@@ -30,7 +34,7 @@ export const PlayerDetails = () => {
   if (!teamId || !playerId) {
     return <p>Erro: ID do time ou do jogador não foi fornecido.</p>;
   }
-  if (loading) return <CircularProgress />;
+  if (loading) return <LoadingComponent />;
   if (error) return <p>Error: {error.message}</p>;
 
   const player = data?.teams?.[0]?.players?.[0];
@@ -77,6 +81,12 @@ export const PlayerDetails = () => {
           )}
           {selectedTab === 3 && (
             <PlayerTeamGamesStats id={id} playerid={playerid} season={season} />
+          )}
+          {selectedTab === 4 && (
+            <ExtremeAnalysis teamId={Number(id)} playerId={playerId} season={season}  />
+          )}
+          {selectedTab === 5 && (
+            <>Em breve</>
           )}
         </Box>
       </Box>

@@ -1,4 +1,5 @@
-import { Box, Typography,CircularProgress } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { LoadingComponent } from "components/loading";
 import Table from "components/table/index";
 import { useTeamDetails } from "hooks/useTeamDetails";
 
@@ -13,7 +14,7 @@ export default function TeamTables({selectedSeason}:{selectedSeason: number}){
     const team = data?.teams?.[0] ?? null;
     const totalStats = team?.stats?.[selectedSeason] ?? null;
     
-    if (loading) return <CircularProgress />;
+    if (loading) return <LoadingComponent/>;
     if (error) return <Typography color="error">Erro ao carregar dados.</Typography>;
 
     const TABLE_HEADERS = [

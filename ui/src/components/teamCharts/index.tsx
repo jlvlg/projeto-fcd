@@ -1,9 +1,10 @@
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import BarChart from "components/charts/BarChart";
 import LineChart from "components/charts/LineChart";
 import PieChart from "components/charts/PieChart";
 import RadarChart from "components/charts/RadarChart";
 import ScatterChart from "components/charts/ScatterChart";
+import { LoadingComponent } from "components/loading";
 import { useTeamDetails } from "hooks/useTeamDetails";
 
 export default function TeamCharts({
@@ -12,7 +13,7 @@ export default function TeamCharts({
   selectedSeason: number;
 }) {
   const { data, loading, error } = useTeamDetails();
-  if (loading) return <CircularProgress />;
+  if (loading) return <LoadingComponent />;
   if (error)
     return <Typography color="error">Erro ao carregar dados.</Typography>;
   const team = data?.teams?.[0] ?? null;
