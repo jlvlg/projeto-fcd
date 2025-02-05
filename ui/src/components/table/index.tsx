@@ -100,7 +100,7 @@ export default function Table({ columns, headers, onClickRow }: Props) {
               }
             >
               {columns.map((column, i) => (
-                <TableCell key={i}>{column[index]}</TableCell>
+                <TableCell key={i} sx={{ textAlign: "center" }}>{column[index]}</TableCell>
               ))}
             </TableRow>
           ))}

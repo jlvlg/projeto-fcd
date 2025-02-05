@@ -39,7 +39,14 @@ export type Team = {
     location: string;
     teamScore: number;
     opponentScore: number;
+    rebounds: number;
+    score: number;
+    assists: number;
+    threePointFieldGoalsAttempted: number;
+    threePointFieldGoals: number;
+    minutesPlayed: number;
   };
+  
   
   export type TotalStats = {
     wins: number;
@@ -63,3 +70,15 @@ export type Team = {
     foulsPerGame: number;
   };
   
+
+export type Player = {
+  id: number;
+  name: string;
+  height: number;
+  weight: number;
+  age: number;
+  experience: number;
+  position: string;
+  college: string | null;
+  salary: number | null;
+};

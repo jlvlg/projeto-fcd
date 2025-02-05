@@ -1,5 +1,5 @@
 import { Box, Typography,CircularProgress } from "@mui/material";
-import Table from "components/table/table";
+import Table from "components/table/index";
 import { useTeamDetails } from "hooks/useTeamDetails";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
