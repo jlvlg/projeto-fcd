@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client";
+import { gql } from "__generated__";
 
-export const GET_TEAM_DETAILS = gql`
+export const GET_TEAM_DETAILS = gql(`
   query GetTeamDetails($id: Int!) {
     teams(ids: [$id]) {
       id
@@ -27,10 +27,16 @@ export const GET_TEAM_DETAILS = gql`
         blocksPerGame
         turnoversPerGame
         foulsPerGame
+        scorePerGameRoad
+        scorePerGameHome
+        opponentScorePerGameRoad
+        opponentScorePerGameHome
       }
       games(seasons: ["2023-24", "2024-25"]) {
         date
-        opponent { full_name }
+        opponent {
+          full_name
+        }
         result
         location
         teamScore
@@ -38,4 +44,4 @@ export const GET_TEAM_DETAILS = gql`
       }
     }
   }
-`;
+`);

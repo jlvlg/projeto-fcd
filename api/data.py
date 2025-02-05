@@ -62,6 +62,16 @@ def get_team_stats(team_id, seasons):
                 "blocks_per_game": y[0]["BLK"] / y[0]["GP"],
                 "turnovers_per_game": y[0]["TOV"] / y[0]["GP"],
                 "fouls_per_game": y[0]["PF"] / y[0]["GP"],
+                "score_per_game_road": y[1].loc["Road", "PTS"] / y[1].loc["Road", "GP"],
+                "score_per_game_home": y[1].loc["Home", "PTS"] / y[1].loc["Home", "GP"],
+                "opponent_score_per_game_road": (
+                    y[1].loc["Road", "PTS"] - y[1].loc["Road", "PLUS_MINUS"]
+                )
+                / y[1].loc["Road", "GP"],
+                "opponent_score_per_game_home": (
+                    y[1].loc["Home", "PTS"] - y[1].loc["Home", "PLUS_MINUS"]
+                )
+                / y[1].loc["Home", "GP"],
             }
             for x, y in seasons.items()
         ]
@@ -197,7 +207,7 @@ def get_players(team_id):
             }
             for x in BeautifulSoup(
                 requests.get(
-                    f"https://www.espn.com/nba/team/roster/_/name/{team["abbreviation"].lower()}/{"-".join(team["full_name"].lower().split())}",
+                    f"https://www.espn.com/nba/team/roster/_/name/{team['abbreviation'].lower()}/{'-'.join(team['full_name'].lower().split())}",
                     headers={"User-Agent": "Mozilla/5.0"},
                 ).text,
                 "html.parser",

@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client";
+import { gql } from "__generated__";
 
-export const GET_PLAYER_GAME_STATS = gql`
+export const GET_PLAYER_GAME_STATS = gql(`
   query GetPlayerGameStats($teamId: Int!, $playerIds: [Int], $season: String!) {
     teams(ids: [$teamId]) {
       players(ids: $playerIds) {
@@ -24,4 +24,4 @@ export const GET_PLAYER_GAME_STATS = gql`
       }
     }
   }
-`;
+`);

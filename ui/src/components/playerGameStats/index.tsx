@@ -1,10 +1,15 @@
 import { useQuery } from "@apollo/client";
-import { CircularProgress, Select, MenuItem, Box, Typography } from "@mui/material";
+import {
+  CircularProgress,
+  Select,
+  MenuItem,
+  Box,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import { GET_PLAYER_GAME_STATS } from "queries/getPlayerGameStats";
 import Table from "components/table";
 import { transpose } from "components/teamTables";
-import { Game } from "types/Types";
 
 interface Props {
   id: string | undefined;
@@ -13,18 +18,20 @@ interface Props {
   selectOpponent?: boolean;
 }
 
-const PlayerGameStatsTable = ({ id, playerid, season, selectOpponent }: Props) => {
-  const teamId = id ? parseInt(id, 10) : null;
+const PlayerGameStatsTable = ({
+  id,
+  playerid,
+  season,
+  selectOpponent,
+}: Props) => {
+  const teamId = id ? parseInt(id, 10) : 0;
   const playerId = playerid ? parseInt(playerid, 10) : null;
   const [selectedOpponent, setSelectedOpponent] = useState<string | null>(null);
 
-  const { loading, error, data } = useQuery<{ teams: { players: { games: Game[] }[] }[] }>(
-    GET_PLAYER_GAME_STATS,
-    {
-      variables: { teamId, playerIds: [playerId], season },
-      skip: !teamId || !playerId,
-    }
-  );
+  const { loading, error, data } = useQuery(GET_PLAYER_GAME_STATS, {
+    variables: { teamId, playerIds: [playerId], season },
+    skip: !teamId || !playerId,
+  });
 
   if (!teamId || !playerId) {
     return <p>Erro: ID do time ou do jogador não foi fornecido.</p>;
@@ -36,10 +43,14 @@ const PlayerGameStatsTable = ({ id, playerid, season, selectOpponent }: Props) =
   const players = data?.teams?.[0]?.players || [];
   let games = players[0]?.games || [];
 
-  const uniqueOpponents = Array.from(new Set(games.map(game => game.opponent.full_name)));
+  const uniqueOpponents = Array.from(
+    new Set(games.map((game) => game.opponent.full_name))
+  );
 
   if (selectOpponent && selectedOpponent) {
-    games = games.filter(game => game.opponent.full_name === selectedOpponent);
+    games = games.filter(
+      (game) => game.opponent.full_name === selectedOpponent
+    );
   }
 
   const headers = [
@@ -73,18 +84,20 @@ const PlayerGameStatsTable = ({ id, playerid, season, selectOpponent }: Props) =
     game.threePointFieldGoals,
     `${game.minutesPlayed.toFixed(2)} minutos`,
   ]);
-  
+
   return (
     <>
       {selectOpponent && uniqueOpponents.length > 0 && (
-      <Box display="flex" alignItems="center" gap={2} mb={3}>
-        <Typography variant="h6">Adversário</Typography>
+        <Box display="flex" alignItems="center" gap={2} mb={3}>
+          <Typography variant="h6">Adversário</Typography>
           <Select
             value={selectedOpponent || uniqueOpponents[0]}
             onChange={(event) => setSelectedOpponent(event.target.value)}
           >
-            {uniqueOpponents.map(opponent => (
-              <MenuItem key={opponent} value={opponent}>{opponent}</MenuItem>
+            {uniqueOpponents.map((opponent) => (
+              <MenuItem key={opponent} value={opponent}>
+                {opponent}
+              </MenuItem>
             ))}
           </Select>
         </Box>

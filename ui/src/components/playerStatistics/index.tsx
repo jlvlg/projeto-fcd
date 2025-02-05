@@ -1,11 +1,21 @@
 import { useQuery } from "@apollo/client";
-import { Box, Typography, Card, CircularProgress, Divider, Stack, } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  CircularProgress,
+  Divider,
+  Stack,
+} from "@mui/material";
 import { BoxPlot } from "components/charts/BoxPlot";
 import { DistributionChart } from "components/charts/DistributionChart";
 import TeamPlayersTable from "components/teamPlayers";
 import { GET_PLAYER_STATS } from "queries/getPlaterStats";
-import { Game } from "types/Types";
-import { calculateMedian, calculateMode, calculateStandardDeviation } from "util/calc";
+import {
+  calculateMedian,
+  calculateMode,
+  calculateStandardDeviation,
+} from "util/calc";
 
 type PlayerStatsProps = {
   teamId: number;
@@ -13,42 +23,51 @@ type PlayerStatsProps = {
   season: string;
 };
 
-export default function PlayerStatisticsDashboard({ teamId, playerId, season, }: PlayerStatsProps) {
-  const { loading, error, data } = useQuery(GET_PLAYER_STATS, { variables: { teamId, playerId, season }, });
+export default function PlayerStatisticsDashboard({
+  teamId,
+  playerId,
+  season,
+}: PlayerStatsProps) {
+  const { loading, error, data } = useQuery(GET_PLAYER_STATS, {
+    variables: { teamId, playerId, season },
+  });
   if (loading) return <CircularProgress />;
-  if (error) return <Typography color="error">Erro ao carregar dados</Typography>;
+  if (error)
+    return <Typography color="error">Erro ao carregar dados</Typography>;
 
-  const player = data.teams[0]?.players[0];
+  const player = data?.teams[0]?.players[0];
   const games = player?.games || [];
 
-  const points = games.map((game: Game) => game.score);
-  const rebounds = games.map((game: Game) => game.rebounds);
-  const assists = games.map((game: Game) => game.assists);
+  const points = games.map((game) => game.score);
+  const rebounds = games.map((game) => game.rebounds);
+  const assists = games.map((game) => game.assists);
 
-  const meanPoints = points.reduce((a:number, b:number) => a + b, 0) / points.length || 0;
+  const meanPoints =
+    points.reduce((a: number, b: number) => a + b, 0) / points.length || 0;
   const medianPoints = calculateMedian(points);
   const modePoints = calculateMode(points);
   const stdDevPoints = calculateStandardDeviation(points);
 
-  const meanRebounds = rebounds.reduce((a:number, b:number) => a + b, 0) / rebounds.length || 0;
+  const meanRebounds =
+    rebounds.reduce((a: number, b: number) => a + b, 0) / rebounds.length || 0;
   const medianRebounds = calculateMedian(rebounds);
   const modeRebounds = calculateMode(rebounds);
   const stdDevRebounds = calculateStandardDeviation(rebounds);
 
-  const meanAssists = assists.reduce((a:number, b:number) => a + b, 0) / assists.length || 0;
+  const meanAssists =
+    assists.reduce((a: number, b: number) => a + b, 0) / assists.length || 0;
   const medianAssists = calculateMedian(assists);
   const modeAssists = calculateMode(assists);
   const stdDevAssists = calculateStandardDeviation(assists);
 
   return (
     <Box sx={{ padding: 4, backgroundColor: "#121212", color: "#e0e0e0" }}>
-
       <Typography variant="h4" textAlign="center" gutterBottom color="#90caf9">
-        Estatísticas do Jogador: {player.name}
+        Estatísticas do Jogador: {player?.name}
       </Typography>
-      
+
       <Card sx={{ padding: 2, backgroundColor: "#1e1e1e", marginBottom: 3 }}>
-        <TeamPlayersTable teamId={teamId} playerId={playerId}/>
+        <TeamPlayersTable teamId={teamId} playerId={playerId} />
       </Card>
 
       <Card sx={{ padding: 3, backgroundColor: "#1e1e1e", marginBottom: 3 }}>
@@ -56,7 +75,12 @@ export default function PlayerStatisticsDashboard({ teamId, playerId, season, }:
           Dados Comparativos
         </Typography>
         <Divider sx={{ marginBottom: 2 }} />
-        <Stack direction="row" spacing={4} flexWrap="wrap" justifyContent="center">
+        <Stack
+          direction="row"
+          spacing={4}
+          flexWrap="wrap"
+          justifyContent="center"
+        >
           <Box sx={{ minWidth: 200 }}>
             <Typography variant="h6" gutterBottom>
               Pontos
@@ -86,7 +110,7 @@ export default function PlayerStatisticsDashboard({ teamId, playerId, season, }:
           </Box>
         </Stack>
       </Card>
-   
+
       <Card sx={{ padding: 3, backgroundColor: "#1e1e1e", marginBottom: 3 }}>
         <Typography variant="h5" gutterBottom>
           Gráfico de Distribuição de Pontos
@@ -142,7 +166,6 @@ export default function PlayerStatisticsDashboard({ teamId, playerId, season, }:
         <Divider sx={{ marginBottom: 2 }} />
         <BoxPlot points={points} rebounds={rebounds} assists={assists} />
       </Card>
-
     </Box>
   );
 }

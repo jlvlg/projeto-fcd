@@ -1,11 +1,16 @@
 import { useQuery } from "@apollo/client";
-import { CircularProgress, Select, MenuItem, Box, Typography } from "@mui/material";
+import {
+  CircularProgress,
+  Select,
+  MenuItem,
+  Box,
+  Typography,
+} from "@mui/material";
 import { useState, useEffect } from "react";
 import { GET_PLAYER_GAME_STATS } from "queries/getPlayerGameStats";
 import Table from "components/table";
 import BarChart from "components/charts/BarChart";
 import PieChart from "components/charts/PieChart";
-import { Game } from "types/Types";
 
 interface Props {
   id: string | undefined;
@@ -14,20 +19,19 @@ interface Props {
 }
 
 const PlayerTeamGamesStats = ({ id, playerid, season }: Props) => {
-  const teamId = id ? parseInt(id, 10) : null;
+  const teamId = id ? parseInt(id, 10) : 0;
   const playerId = playerid ? parseInt(playerid, 10) : null;
 
-  const { loading, error, data } = useQuery<{ teams: { players: { games: Game[] }[] }[] }>(
-    GET_PLAYER_GAME_STATS,
-    {
-      variables: { teamId, playerIds: playerId ? [playerId] : [], season },
-      skip: !teamId || !playerId,
-    }
-  );
+  const { loading, error, data } = useQuery(GET_PLAYER_GAME_STATS, {
+    variables: { teamId, playerIds: playerId ? [playerId] : [], season },
+    skip: !teamId || !playerId,
+  });
 
   const players = data?.teams?.[0]?.players || [];
   const games = players[0]?.games || [];
-  const uniqueOpponents = Array.from(new Set(games.map(game => game.opponent.full_name)));
+  const uniqueOpponents = Array.from(
+    new Set(games.map((game) => game.opponent.full_name))
+  );
 
   const [selectedOpponent, setSelectedOpponent] = useState<string | null>(null);
 
@@ -44,12 +48,22 @@ const PlayerTeamGamesStats = ({ id, playerid, season }: Props) => {
   if (loading) return <CircularProgress />;
   if (error) return <p>Error: {error.message}</p>;
 
-  const totalHomeGames = games.filter(game => game.location === "home").length;
-  const totalAwayGames = games.filter(game => game.location === "road").length;
+  const totalHomeGames = games.filter(
+    (game) => game.location === "home"
+  ).length;
+  const totalAwayGames = games.filter(
+    (game) => game.location === "road"
+  ).length;
 
-  const filteredGames = games.filter(game => game.opponent.full_name === selectedOpponent);
-  const homeGamesAgainstOpponent = filteredGames.filter(game => game.location === "home").length;
-  const awayGamesAgainstOpponent = filteredGames.filter(game => game.location === "road").length;
+  const filteredGames = games.filter(
+    (game) => game.opponent.full_name === selectedOpponent
+  );
+  const homeGamesAgainstOpponent = filteredGames.filter(
+    (game) => game.location === "home"
+  ).length;
+  const awayGamesAgainstOpponent = filteredGames.filter(
+    (game) => game.location === "road"
+  ).length;
 
   const tableHeaders = [
     { label: "Local" },
@@ -98,8 +112,10 @@ const PlayerTeamGamesStats = ({ id, playerid, season }: Props) => {
           value={selectedOpponent || ""}
           onChange={(event) => setSelectedOpponent(event.target.value)}
         >
-          {uniqueOpponents.map(opponent => (
-            <MenuItem key={opponent} value={opponent}>{opponent}</MenuItem>
+          {uniqueOpponents.map((opponent) => (
+            <MenuItem key={opponent} value={opponent}>
+              {opponent}
+            </MenuItem>
           ))}
         </Select>
       </Box>

@@ -4,27 +4,23 @@ import Table from "components/table";
 import { transpose } from "components/teamTables";
 import { GET_TEAM_PLAYERS } from "queries/getTeamPlayers";
 import { useNavigate } from "react-router";
-import { Player } from "types/Types";
 
 type Props = {
   teamId: number;
-  playerId?: number; 
+  playerId?: number;
 };
 
 const TeamPlayersTable = ({ teamId, playerId }: Props) => {
   const navigate = useNavigate();
 
-  const { loading, error, data } = useQuery<{ teams: { players: Player[] }[] }>(
-    GET_TEAM_PLAYERS,
-    {
-      variables: { teamIds: [teamId] },
-    }
-  );
+  const { loading, error, data } = useQuery(GET_TEAM_PLAYERS, {
+    variables: { teamIds: [teamId] },
+  });
 
   if (loading) return <CircularProgress />;
   if (error) return <p>Error: {error.message}</p>;
 
-  let players: Player[] = data?.teams[0]?.players || [];
+  let players = data?.teams[0]?.players || [];
 
   if (playerId) {
     players = players.filter((player) => player.id === playerId);
