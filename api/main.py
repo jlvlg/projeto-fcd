@@ -8,9 +8,6 @@ import numpy as np
 import uvicorn
 
 data.save_data()
-ai.get_models(202696)
-ai.get_models(203897)
-ai.get_models(1629632)
 
 type_defs = load_schema_from_path("schema.graphql")
 

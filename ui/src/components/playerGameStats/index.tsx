@@ -1,10 +1,15 @@
 import { useQuery } from "@apollo/client";
-import { CircularProgress, Select, MenuItem, Box, Typography } from "@mui/material";
+import {
+  CircularProgress,
+  Select,
+  MenuItem,
+  Box,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import { GET_PLAYER_GAME_STATS } from "queries/getPlayerGameStats";
 import Table from "components/table";
 import { transpose } from "components/teamTables";
-import { Game } from "types/Types";
 
 interface Props {
   id: string | undefined;
@@ -13,8 +18,13 @@ interface Props {
   selectOpponent?: boolean;
 }
 
-const PlayerGameStatsTable = ({ id, playerid, season, selectOpponent }: Props) => {
-  const teamId = id ? parseInt(id, 10) : null;
+const PlayerGameStatsTable = ({
+  id,
+  playerid,
+  season,
+  selectOpponent,
+}: Props) => {
+  const teamId = id ? parseInt(id, 10) : 0;
   const playerId = playerid ? parseInt(playerid, 10) : null;
   const { loading, error, data } = useQuery<{ teams: { players: { games: Game[] }[] }[] }>(
     GET_PLAYER_GAME_STATS,
@@ -42,8 +52,34 @@ const PlayerGameStatsTable = ({ id, playerid, season, selectOpponent }: Props) =
   const totalAwayGames = games.filter(game => game.location === "road").length;
 
   if (selectOpponent && selectedOpponent) {
-    games = games.filter(game => game.opponent.full_name === selectedOpponent);
+    games = games.filter(
+      (game) => game.opponent.full_name === selectedOpponent
+    );
   }
+
+  const selectedOpponentHomeGames = games.filter(game => game.location === "home" && game.opponent.full_name === selectedOpponent).length;
+  const selectedOpponentAwayGames = games.filter(game => game.location === "road" && game.opponent.full_name === selectedOpponent).length;
+
+  const summaryHeaders = selectOpponent
+    ? [
+        { label: "Categoria" },
+        { label: "Total" },
+        { label: `Contra ${selectedOpponent || "-"}` },
+      ]
+    : [
+        { label: "Categoria" },
+        { label: "Total" },
+      ];
+
+  const summaryColumns = selectOpponent
+    ? [
+        ["Jogos em Casa", totalHomeGames, selectedOpponentHomeGames],
+        ["Jogos Fora", totalAwayGames, selectedOpponentAwayGames],
+      ]
+    : [
+        ["Jogos em Casa", totalHomeGames],
+        ["Jogos Fora", totalAwayGames],
+      ];
 
   const selectedOpponentHomeGames = games.filter(game => game.location === "home" && game.opponent.full_name === selectedOpponent).length;
   const selectedOpponentAwayGames = games.filter(game => game.location === "road" && game.opponent.full_name === selectedOpponent).length;
@@ -100,7 +136,7 @@ const PlayerGameStatsTable = ({ id, playerid, season, selectOpponent }: Props) =
     game.threePointFieldGoals,
     `${game.minutesPlayed.toFixed(2)} minutos`,
   ]);
-  
+
   return (
     <>
       <Typography variant="h6">Temporada atual</Typography>

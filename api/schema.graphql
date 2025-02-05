@@ -35,6 +35,10 @@ type TeamStats {
   blocksPerGame: Float!
   turnoversPerGame: Float!
   foulsPerGame: Float!
+  scorePerGameRoad: Float!
+  scorePerGameHome: Float!
+  opponentScorePerGameRoad: Float!
+  opponentScorePerGameHome: Float!
 }
 
 type Game {

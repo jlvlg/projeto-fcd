@@ -4,7 +4,6 @@ import Table from "components/table/index";
 import { GET_TEAMS } from "queries/getTeams";
 import { useMemo } from "react";
 import { useNavigate } from "react-router";
-import { Team } from "types/Types";
 
 type Props = {};
 
@@ -35,7 +34,7 @@ export default function TeamsPage({}: Props) {
     const eastName: (string | number)[] = [];
     const eastId: (string | number)[] = [];
 
-    data?.teams.forEach((team: Team) => {
+    data?.teams.forEach((team) => {
       if (team.conference === "West") {
         westRank.push(team.rank!);
         westName.push(team.full_name);
