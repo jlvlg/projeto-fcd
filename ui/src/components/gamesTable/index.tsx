@@ -1,4 +1,5 @@
-import { CircularProgress, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
+import { LoadingComponent } from "components/loading";
 import Table from "components/table";
 import { transpose } from "components/teamTables";
 import { useTeamDetails } from "hooks/useTeamDetails";
@@ -6,7 +7,7 @@ import { useTeamDetails } from "hooks/useTeamDetails";
 export default function GamesTable({selectedSeason}:{selectedSeason: number}){
 
     const { data, loading, error } = useTeamDetails();
-    if (loading) return <CircularProgress />;
+    if (loading) return <LoadingComponent />;
     if (error) return <Typography color="error">Erro ao carregar dados.</Typography>;
     
     const team = data?.teams?.[0] ?? null;

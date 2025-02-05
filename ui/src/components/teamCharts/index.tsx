@@ -1,9 +1,10 @@
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import BarChart from "components/charts/BarChart";
 import LineChart from "components/charts/LineChart";
 import PieChart from "components/charts/PieChart";
 import RadarChart from "components/charts/RadarChart";
 import ScatterChart from "components/charts/ScatterChart";
+import { LoadingComponent } from "components/loading";
 import { useTeamDetails } from "hooks/useTeamDetails";
 
 export default function TeamCharts({
@@ -12,7 +13,7 @@ export default function TeamCharts({
   selectedSeason: number;
 }) {
   const { data, loading, error } = useTeamDetails();
-  if (loading) return <CircularProgress />;
+  if (loading) return <LoadingComponent />;
   if (error)
     return <Typography color="error">Erro ao carregar dados.</Typography>;
   const team = data?.teams?.[0] ?? null;
@@ -184,69 +185,25 @@ export default function TeamCharts({
   };
 
   return (
-    <>
-      <Box sx={{ display: "flex", justifyContent: "space-between", gap: 3 }}>
-        <Box sx={{ flex: 1, height: 300 }}>
-          {" "}
-          <BarChart data={barData} options={chartOptions} />{" "}
-        </Box>
-        <Box sx={{ flex: 1, height: 300 }}>
-          {" "}
-          <BarChart data={groupedBarData} options={chartOptions} />{" "}
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          gap: 3,
-          alignItems: "center",
-        }}
-      >
-        <Box sx={{ flex: 1, height: 300 }}>
-          {" "}
-          <PieChart data={pieData} options={chartOptions} />{" "}
-        </Box>
-        <Box sx={{ flex: 1, height: 550 }}>
-          {" "}
-          <RadarChart data={radarData} options={chartOptions} />{" "}
-        </Box>
-      </Box>
-      <Box sx={{ height: 300 }}>
-        {" "}
-        <LineChart data={lineData} options={chartOptions} />{" "}
-      </Box>
-      <Box sx={{ height: 300 }}>
-        {" "}
-        <ScatterChart data={scatterData} options={chartOptions} />{" "}
-      </Box>
+        <>
+          <Box sx={{ display: "flex", justifyContent: "space-between", gap: 3 }}>
+            <Box sx={{ flex: 1, height: 300 }}> <BarChart data={barData} options={chartOptions} /> </Box>
+            <Box sx={{ flex: 1, height: 300 }}> <BarChart data={groupedBarData} options={chartOptions} /> </Box>
+          </Box>
+          <Box sx={{ display: "flex", justifyContent: "space-between", gap: 3, alignItems: "center", }} >
+            <Box sx={{ flex: 1, height: 300 }}> <PieChart data={pieData} options={chartOptions} /> </Box>
+            <Box sx={{ flex: 1, height: 550 }}> <RadarChart data={radarData} options={chartOptions} /> </Box>
+          </Box>
+          <Box sx={{ height: 300 }}> <LineChart data={lineData} options={chartOptions} /> </Box>
+          <Box sx={{ height: 300 }}> <ScatterChart data={scatterData} options={chartOptions} /> </Box>
+          <Typography variant="body2" fontSize="0.875rem" color="textSecondary">Média de pontos marcados e sofridos durante a temporada</Typography>
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          gap: 3,
-          alignItems: "center",
-        }}
-      >
-        <Box sx={{ flex: 1, height: 400 }}>
-          {" "}
-          <PieChart data={pieDataDefesa} options={chartOptions} />{" "}
-        </Box>
-        <Box sx={{ flex: 1, height: 500 }}>
-          <RadarChart data={radarDataDefesa} options={chartOptions} />{" "}
-        </Box>
-      </Box>
-      <Box sx={{ height: 300 }}>
-        <BarChart
-          data={stackedBarDataJogos}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { x: { stacked: true }, y: { stacked: true } },
-          }}
-        />
-      </Box>
-    </>
+
+          <Box sx={{ display: "flex", justifyContent: "space-between", gap: 3, alignItems: "center", }} >
+            <Box sx={{ flex: 1, height: 400 }}> <PieChart data={pieDataDefesa } options={chartOptions} /> </Box>
+            <Box sx={{ flex: 1, height: 500 }}><RadarChart data={radarDataDefesa} options={chartOptions} /> </Box>
+          </Box>
+          <Box sx={{ height: 300 }}><BarChart data={stackedBarDataJogos} options={{ responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }} /></Box>
+        </>
   );
 }

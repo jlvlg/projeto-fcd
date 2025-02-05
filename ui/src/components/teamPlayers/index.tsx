@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { CircularProgress } from "@mui/material";
+import { LoadingComponent } from "components/loading";
 import Table from "components/table";
 import { transpose } from "components/teamTables";
 import { GET_TEAM_PLAYERS } from "queries/getTeamPlayers";
@@ -17,7 +17,7 @@ const TeamPlayersTable = ({ teamId, playerId }: Props) => {
     variables: { teamIds: [teamId] },
   });
 
-  if (loading) return <CircularProgress />;
+  if (loading) return <LoadingComponent />;
   if (error) return <p>Error: {error.message}</p>;
 
   let players = data?.teams[0]?.players || [];

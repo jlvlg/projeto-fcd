@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, Typography} from "@mui/material";
 import { useTeamDetails } from "hooks/useTeamDetails";
 import TeamCharts from "components/teamCharts";
 import SeasonSelect from "components/seasonSelect";
@@ -7,6 +7,8 @@ import TeamTables from "components/teamTables";
 import GamesTable from "components/gamesTable";
 import SidebarMenu from "components/menu";
 import TeamPlayersTable from "components/teamPlayers";
+import { Team } from "__generated__/graphql";
+import { LoadingComponent } from "components/loading";
 
 const drawerWidth = 240;
 
@@ -16,10 +18,10 @@ export default function TeamDetailsPage() {
   const [selectedSeason, setSelectedSeason] = useState(2);
   const menuItems = ["Gráficos", "Tabelas", "Jogos", "Jogadores"];
 
-  if (loading) return <CircularProgress />;
+  if (loading) return <LoadingComponent />;
   if (error) return <Typography color="error">Erro ao carregar dados.</Typography>;
 
-  const team = data?.teams?.[0] ?? null;
+  const team = data?.teams?.[0] as Partial<Team> | null;
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
       <SidebarMenu 
