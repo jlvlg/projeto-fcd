@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { Box } from "@mui/material";
-import Table from "components/table/table";
+import Table from "components/table/index";
 import { GET_TEAMS } from "queries/getTeams";
 import { useMemo } from "react";
 import { useNavigate } from "react-router";
