@@ -16,8 +16,6 @@ interface Props {
 const PlayerGameStatsTable = ({ id, playerid, season, selectOpponent }: Props) => {
   const teamId = id ? parseInt(id, 10) : null;
   const playerId = playerid ? parseInt(playerid, 10) : null;
-  const [selectedOpponent, setSelectedOpponent] = useState<string | null>(null);
-
   const { loading, error, data } = useQuery<{ teams: { players: { games: Game[] }[] }[] }>(
     GET_PLAYER_GAME_STATS,
     {
@@ -25,6 +23,8 @@ const PlayerGameStatsTable = ({ id, playerid, season, selectOpponent }: Props) =
       skip: !teamId || !playerId,
     }
   );
+
+  const [selectedOpponent, setSelectedOpponent] = useState<string | null>(selectOpponent ? "" : null);
 
   if (!teamId || !playerId) {
     return <p>Erro: ID do time ou do jogador não foi fornecido.</p>;
@@ -38,9 +38,36 @@ const PlayerGameStatsTable = ({ id, playerid, season, selectOpponent }: Props) =
 
   const uniqueOpponents = Array.from(new Set(games.map(game => game.opponent.full_name)));
 
+  const totalHomeGames = games.filter(game => game.location === "home").length;
+  const totalAwayGames = games.filter(game => game.location === "road").length;
+
   if (selectOpponent && selectedOpponent) {
     games = games.filter(game => game.opponent.full_name === selectedOpponent);
   }
+
+  const selectedOpponentHomeGames = games.filter(game => game.location === "home" && game.opponent.full_name === selectedOpponent).length;
+  const selectedOpponentAwayGames = games.filter(game => game.location === "road" && game.opponent.full_name === selectedOpponent).length;
+
+  const summaryHeaders = selectOpponent
+    ? [
+        { label: "Categoria" },
+        { label: "Total" },
+        { label: `Contra ${selectedOpponent || "-"}` },
+      ]
+    : [
+        { label: "Categoria" },
+        { label: "Total" },
+      ];
+
+  const summaryColumns = selectOpponent
+    ? [
+        ["Jogos em Casa", totalHomeGames, selectedOpponentHomeGames],
+        ["Jogos Fora", totalAwayGames, selectedOpponentAwayGames],
+      ]
+    : [
+        ["Jogos em Casa", totalHomeGames],
+        ["Jogos Fora", totalAwayGames],
+      ];
 
   const headers = [
     { label: "Data do Jogo" },
@@ -76,24 +103,50 @@ const PlayerGameStatsTable = ({ id, playerid, season, selectOpponent }: Props) =
   
   return (
     <>
-      {selectOpponent && uniqueOpponents.length > 0 && (
-      <Box display="flex" alignItems="center" gap={2} mb={3}>
-        <Typography variant="h6">Adversário</Typography>
+      <Typography variant="h6">Temporada atual</Typography>
+      <br/>
+
+      {selectOpponent && (
+        <Box display="flex" alignItems="center" gap={2} mb={3}>
+          <Typography variant="h6">Adversário</Typography>
           <Select
-            value={selectedOpponent || uniqueOpponents[0]}
+            value={selectedOpponent || ""}
             onChange={(event) => setSelectedOpponent(event.target.value)}
           >
+            <MenuItem value="">Selecione um oponente</MenuItem>
             {uniqueOpponents.map(opponent => (
               <MenuItem key={opponent} value={opponent}>{opponent}</MenuItem>
             ))}
           </Select>
         </Box>
       )}
-      <Table
-        headers={headers}
-        columns={transpose(columns)}
-        onClickRow={(row) => console.log("Selected Row:", row)}
-      />
+
+      {selectOpponent ? (
+      selectedOpponent ? (
+        <>
+        <Table headers={summaryHeaders} columns={transpose(summaryColumns)} />
+        <br/>
+        <Table
+          headers={headers}
+          columns={transpose(columns)}
+          onClickRow={(row) => console.log("Selected Row:", row)}
+        />
+      </>
+      ) : (
+        <Typography variant="h6">Sélecione um adversário Adversário!</Typography>
+      )
+    ) : (
+      <>
+        <Table headers={summaryHeaders} columns={transpose(summaryColumns)} />
+        <br/>
+        <Table
+          headers={headers}
+          columns={transpose(columns)}
+          onClickRow={(row) => console.log("Selected Row:", row)}
+        />
+      </>
+    )}
+
     </>
   );
 };

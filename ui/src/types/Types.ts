@@ -82,3 +82,15 @@ export type Player = {
   college: string | null;
   salary: number | null;
 };
+
+export type PlayerStats = {
+  season: string;
+  gamesPlayed: number;
+  score: number;
+  meanScore: number;
+  assists: number;
+  meanAssists: number;
+  rebounds: number;
+  meanRebounds: number;
+  minutesPlayed: number;
+};

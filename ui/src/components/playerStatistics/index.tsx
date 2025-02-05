@@ -2,6 +2,7 @@ import { useQuery } from "@apollo/client";
 import { Box, Typography, Card, CircularProgress, Divider, Stack, } from "@mui/material";
 import { BoxPlot } from "components/charts/BoxPlot";
 import { DistributionChart } from "components/charts/DistributionChart";
+import { PlayerStatsTable } from "components/playerStatsCareerTable";
 import TeamPlayersTable from "components/teamPlayers";
 import { GET_PLAYER_STATS } from "queries/getPlaterStats";
 import { Game } from "types/Types";
@@ -29,20 +30,22 @@ export default function PlayerStatisticsDashboard({ teamId, playerId, season, }:
   const medianPoints = calculateMedian(points);
   const modePoints = calculateMode(points);
   const stdDevPoints = calculateStandardDeviation(points);
+  const belowMeanPointsPercentage = (points.filter((p: number) => p < meanPoints).length / points.length) * 100;
 
   const meanRebounds = rebounds.reduce((a:number, b:number) => a + b, 0) / rebounds.length || 0;
   const medianRebounds = calculateMedian(rebounds);
   const modeRebounds = calculateMode(rebounds);
   const stdDevRebounds = calculateStandardDeviation(rebounds);
+  const belowMeanReboundsPercentage = (rebounds.filter((r: number) => r < meanRebounds).length / rebounds.length) * 100;
 
   const meanAssists = assists.reduce((a:number, b:number) => a + b, 0) / assists.length || 0;
   const medianAssists = calculateMedian(assists);
   const modeAssists = calculateMode(assists);
   const stdDevAssists = calculateStandardDeviation(assists);
+  const belowMeanAssistsPercentage = (assists.filter((a: number) => a < meanAssists).length / assists.length) * 100;
 
   return (
     <Box sx={{ padding: 4, backgroundColor: "#121212", color: "#e0e0e0" }}>
-
       <Typography variant="h4" textAlign="center" gutterBottom color="#90caf9">
         Estatísticas do Jogador: {player.name}
       </Typography>
@@ -51,6 +54,8 @@ export default function PlayerStatisticsDashboard({ teamId, playerId, season, }:
         <TeamPlayersTable teamId={teamId} playerId={playerId}/>
       </Card>
 
+      <PlayerStatsTable playerId={playerId} teamId={teamId} season={season} />
+
       <Card sx={{ padding: 3, backgroundColor: "#1e1e1e", marginBottom: 3 }}>
         <Typography variant="h5" gutterBottom>
           Dados Comparativos
@@ -58,35 +63,31 @@ export default function PlayerStatisticsDashboard({ teamId, playerId, season, }:
         <Divider sx={{ marginBottom: 2 }} />
         <Stack direction="row" spacing={4} flexWrap="wrap" justifyContent="center">
           <Box sx={{ minWidth: 200 }}>
-            <Typography variant="h6" gutterBottom>
-              Pontos
-            </Typography>
+            <Typography variant="h6" gutterBottom>Pontos</Typography>
             <Typography>Média: {meanPoints.toFixed(2)}</Typography>
             <Typography>Mediana: {medianPoints.toFixed(2)}</Typography>
             <Typography>Moda: {modePoints.join(", ")}</Typography>
             <Typography>Desvio Padrão: {stdDevPoints.toFixed(2)}</Typography>
+            <Typography>Percentual abaixo da média: {belowMeanPointsPercentage.toFixed(2)}%</Typography>
           </Box>
           <Box sx={{ minWidth: 200 }}>
-            <Typography variant="h6" gutterBottom>
-              Rebotes
-            </Typography>
+            <Typography variant="h6" gutterBottom>Rebotes</Typography>
             <Typography>Média: {meanRebounds.toFixed(2)}</Typography>
             <Typography>Mediana: {medianRebounds.toFixed(2)}</Typography>
             <Typography>Moda: {modeRebounds.join(", ")}</Typography>
             <Typography>Desvio Padrão: {stdDevRebounds.toFixed(2)}</Typography>
+            <Typography>Percentual abaixo da média: {belowMeanReboundsPercentage.toFixed(2)}%</Typography>
           </Box>
           <Box sx={{ minWidth: 200 }}>
-            <Typography variant="h6" gutterBottom>
-              Assistências
-            </Typography>
+            <Typography variant="h6" gutterBottom>Assistências</Typography>
             <Typography>Média: {meanAssists.toFixed(2)}</Typography>
             <Typography>Mediana: {medianAssists.toFixed(2)}</Typography>
             <Typography>Moda: {modeAssists.join(", ")}</Typography>
             <Typography>Desvio Padrão: {stdDevAssists.toFixed(2)}</Typography>
+            <Typography>Percentual abaixo da média: {belowMeanAssistsPercentage.toFixed(2)}%</Typography>
           </Box>
         </Stack>
       </Card>
-   
       <Card sx={{ padding: 3, backgroundColor: "#1e1e1e", marginBottom: 3 }}>
         <Typography variant="h5" gutterBottom>
           Gráfico de Distribuição de Pontos

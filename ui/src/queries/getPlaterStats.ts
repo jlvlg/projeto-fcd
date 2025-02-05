@@ -20,13 +20,14 @@ export const GET_PLAYER_STATS = gql`
           score
           minutesPlayed
         }
-        stats(seasons: [$season]) {
+        stats(seasons: [$season, "career"]) {
           gamesPlayed
           score
           assists
           meanAssists
           rebounds
           meanRebounds
+          minutesPlayed
         }
       }
     }

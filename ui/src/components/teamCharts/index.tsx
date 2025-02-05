@@ -120,11 +120,12 @@ export default function TeamCharts({selectedSeason} : {selectedSeason: number}) 
           </Box>
           <Box sx={{ height: 300 }}> <LineChart data={lineData} options={chartOptions} /> </Box>
           <Box sx={{ height: 300 }}> <ScatterChart data={scatterData} options={chartOptions} /> </Box>
+          <Typography variant="body2" fontSize="0.875rem" color="textSecondary">Média de pontos marcados e sofridos durante a temporada</Typography>
+
 
           <Box sx={{ display: "flex", justifyContent: "space-between", gap: 3, alignItems: "center", }} >
-          <Box sx={{ flex: 1, height: 400 }}> <PieChart data={pieDataDefesa } options={chartOptions} /> </Box>
-          <Box sx={{ flex: 1, height: 500 }}><RadarChart data={radarDataDefesa} options={chartOptions} /> </Box>
-
+            <Box sx={{ flex: 1, height: 400 }}> <PieChart data={pieDataDefesa } options={chartOptions} /> </Box>
+            <Box sx={{ flex: 1, height: 500 }}><RadarChart data={radarDataDefesa} options={chartOptions} /> </Box>
           </Box>
           <Box sx={{ height: 300 }}><BarChart data={stackedBarDataJogos} options={{ responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }} /></Box>
         </>
