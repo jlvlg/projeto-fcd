@@ -6,7 +6,7 @@ from functools import reduce
 import requests
 from pathlib import Path
 from unidecode import unidecode
-import shutil
+from time import sleep
 
 
 def get_teams():
@@ -244,6 +244,7 @@ def get_players(team_id):
 
 def get_player_games(player_id, team_id, seasons, opponent_object=True):
     games = get_games(seasons, player_id=player_id, opponent_object=opponent_object)
+    sleep(1)
     team_games = get_team_games(team_id, seasons, opponent_object=False)
     games = games.merge(team_games, on="id", suffixes=("", "_DROP"))
     return games.loc[:, ~games.columns.str.contains("_DROP")]
@@ -356,10 +357,13 @@ def save_data():
     Path("cache/team").mkdir(parents=True, exist_ok=True)
     Path("cache/player").mkdir(parents=True, exist_ok=True)
     get_teams().to_csv("cache/teams.csv", index=False)
+    sleep(1)
     get_team_stats(1610612741, ["2023-24", "2024-25"]).to_csv(
         "cache/team/stats.csv", index=False
     )
+    sleep(1)
     get_team_games(1610612741, ["2023-24", "2024-25"], opponent_object=False).to_csv(
         "cache/team/games.csv", index=False
     )
+    sleep(1)
     get_players(1610612741).to_csv("cache/team/players.csv", index=False)
