@@ -22,7 +22,9 @@ export const PlayerDetails = () => {
     "Partidas Específicas",
     "Jogos Realizados",
     "Análise de Gumbel",
-    "Regressão Linear"
+    "Regressão Linear",
+    "Regressão Logística",
+    "GAMLSS"
   ];
   const drawerWidth = 240;
 
@@ -86,7 +88,13 @@ export const PlayerDetails = () => {
             <ExtremeAnalysis teamId={Number(id)} playerId={playerId} season={season}  />
           )}
           {selectedTab === 5 && (
-            <>Em breve</>
+            <>Em Breve</>
+          )}
+          {selectedTab === 6 && (
+            <>Em Breve 2</>
+          )}
+          {selectedTab === 7 && (
+            <>Em Breve 3 </>
           )}
         </Box>
       </Box>

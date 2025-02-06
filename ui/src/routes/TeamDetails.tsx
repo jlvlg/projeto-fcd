@@ -37,7 +37,7 @@ export default function TeamDetailsPage() {
           {selectedTab === 0 && <TeamCharts selectedSeason={selectedSeason} />}
           {selectedTab === 1 && <TeamTables selectedSeason={selectedSeason} />}
           {selectedTab === 2 && <GamesTable selectedSeason={selectedSeason} />}
-          {selectedTab === 3 && <TeamPlayersTable teamId={1610612760}/>}
+          {selectedTab === 3 && <TeamPlayersTable teamId={team?.id || 0}/>}
         </Box>
       </Box>
     </Box>

@@ -9,6 +9,7 @@ import TeamsPage from "./routes/Teams.tsx";
 import TeamDetails from "./routes/TeamDetails.tsx";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, RadialLinearScale, PointElement, LineElement } from 'chart.js';
 import { PlayerDetails } from "routes/PlayerDetails.tsx";
+import Home from "routes/Home.tsx";
 ChartJS.register(  CategoryScale,   LinearScale,  BarElement,  ArcElement,  RadialLinearScale,  PointElement,  LineElement,  Title,  Tooltip,  Legend);
 
 const client = new ApolloClient({
@@ -26,7 +27,7 @@ createRoot(document.getElementById("root")!).render(
         <BrowserRouter>
           <Routes>
             <Route element={<App />}>
-              <Route index element={<div></div>} />
+              <Route index element={<Home/>} />
               <Route path="teams" element={<TeamsPage />}></Route>
               <Route path="/teams/:id" element={<TeamDetails />} />
               <Route path="/teams/:id/:playerid" element={<PlayerDetails />} />
