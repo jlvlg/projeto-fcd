@@ -14,7 +14,7 @@ from pygam import LinearGAM, PoissonGAM
 models = {}
 
 
-def get_models(player_id, team_id):
+def get_models(player_id):
     if exists := models.get(player_id):
         return exists
 
@@ -43,8 +43,10 @@ def get_models(player_id, team_id):
 
         return new
     except FileNotFoundError:
-        data.save_player_data(player_id, team_id)
-        return get_models(player_id, team_id)
+        data.save_player_data(player_id)
+        return get_models(
+            player_id,
+        )
 
 
 def preprocess(data, targets):
@@ -179,10 +181,10 @@ def linear_helper(y_pred, y_true, op):
     }
 
 
-def regression(model, player_id, team_id, column):
+def regression(model, player_id, column):
     y_pred = model[f"model_{column}"].predict(model["X_test"])
     y_true = model[f"y_{column}_test"]
-    stats = get_models(player_id, team_id)["data"]["stats"][stats["season"] == "career"]
+    stats = get_models(player_id)["data"]["stats"][stats["season"] == "career"]
     return {
         "greater_than_mean": linear_helper(
             y_pred, y_true, lambda x: x > stats[f"mean_{column}"]
@@ -222,9 +224,9 @@ def gam_prob(model, column, x):
     return poisson.pmf(x, y_pred)
 
 
-def logistic(player_id, team_id, column):
-    X = get_models(player_id, team_id)["logistic"]["X_test"]
-    log_models = get_models(player_id, team_id)["logistic"]
+def logistic(player_id, column):
+    X = get_models(player_id)["logistic"]["X_test"]
+    log_models = get_models(player_id)["logistic"]
     result = {}
     for op in [
         "greater_than_mean",

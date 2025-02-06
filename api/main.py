@@ -56,7 +56,7 @@ def resolve_players(team, *_, ids=[], team_id=None):
 
 @player.field("games")
 def resolve_player_games(player, *_, seasons, opponent_ids=None):
-    games = data.get_player_games(player["id"], player["team_id"], seasons)
+    games = data.get_player_games(player["id"], seasons)
     if opponent_ids:
         games = games[games["opponent"].apply(lambda x: x["id"] in opponent_ids)]
     return games.to_dict(orient="records")
@@ -69,14 +69,12 @@ def resolve_player_stats(player, *_, seasons):
 
 @player.field("ai")
 def resolve_ai(player, *_):
-    return {"player_id": player["id"], "team_id": player["team_id"]}
+    return {"player_id": player["id"]}
 
 
 @aitype.field("gumbel")
 def resolve_gumbel(aiparent, *_, column, x=None, start=None, end=None):
-    loc, scale = ai.get_models(aiparent["player_id"], aiparent["team_id"])["gumbel"][
-        column
-    ]
+    loc, scale = ai.get_models(aiparent["player_id"])["gumbel"][column]
     return {
         "loc": loc,
         "scale": scale,
@@ -87,9 +85,7 @@ def resolve_gumbel(aiparent, *_, column, x=None, start=None, end=None):
 @aitype.field("proportions")
 def resolve_proportions(aiparent, *_, column, x=None, start=None, end=None):
     return {
-        "data": ai.get_models(aiparent["player_id"], aiparent["team_id"])["data"][
-            "games"
-        ][column],
+        "data": ai.get_models(aiparent["player_id"])["data"]["games"][column],
         "X": np.array([x]) if x else np.linspace(start, end),
     }
 
@@ -97,38 +93,35 @@ def resolve_proportions(aiparent, *_, column, x=None, start=None, end=None):
 @aitype.field("linearRegression")
 def resolve_linear_regression(aiparent, *_, column):
     return ai.regression(
-        ai.get_models(aiparent["player_id"], aiparent["team_id"])["linear"],
+        ai.get_models(aiparent["player_id"])["linear"],
         aiparent["player_id"],
-        aiparent["team_id"],
         column,
     )
 
 
 @aitype.field("linearGAM")
 def resolve_linear_gam(aiparent, *_, column):
-    model = ai.get_models(aiparent["player_id"], aiparent["team_id"])["gam"]["linear"]
+    model = ai.get_models(aiparent["player_id"])["gam"]["linear"]
     return ai.regression(
         model,
         aiparent["player_id"],
-        aiparent["team_id"],
         column,
     ) | {"column": column, "model": model}
 
 
 @aitype.field("poissonGAM")
 def resolve_poisson_gam(aiparent, *_, column):
-    model = ai.get_models(aiparent["player_id"], aiparent["team_id"])["gam"]["poisson"]
+    model = ai.get_models(aiparent["player_id"])["gam"]["poisson"]
     return ai.regression(
         model,
         aiparent["player_id"],
-        aiparent["team_id"],
         column,
     ) | {"column": column, "model": model}
 
 
 @aitype.field("logisticRegression")
 def resolve_logistic_regression(aiparent, *_, column):
-    return ai.logistic(aiparent["player_id"], aiparent["team_id"], column)
+    return ai.logistic(aiparent["player_id"], column)
 
 
 @gumbel.field("probGreaterThan")

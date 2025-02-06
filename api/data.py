@@ -111,6 +111,7 @@ def get_games(seasons, team_id=None, player_id=None, opponent_object=True):
         .rename(
             columns={
                 "GAME_ID": "id",
+                "TEAM_ID": "team_id",
                 "SEASON_YEAR": "season",
                 "GAME_DATE": "date",
                 "WL": "result",
@@ -164,6 +165,7 @@ def get_games(seasons, team_id=None, player_id=None, opponent_object=True):
                 "turnovers",
                 "fouls",
                 "plus_minus",
+                "team_id",
             ]
         ]
     )
@@ -243,11 +245,12 @@ def get_players(team_id):
     )
 
 
-def get_player_games(player_id, team_id, seasons, opponent_object=True):
+def get_player_games(player_id, seasons, opponent_object=True):
     games = get_games(seasons, player_id=player_id, opponent_object=opponent_object)
-    sleep(1)
-    team_games = get_team_games(team_id, seasons, opponent_object=False)
-    games = games.merge(team_games, on="id", how="left", suffixes=("", "_DROP"))
+    for team in games["team_id"].unique():
+        sleep(1)
+        team_games = get_team_games(team, seasons, opponent_object=False)
+        games = games.merge(team_games, on="id", how="left", suffixes=("", "_DROP"))
     return games.loc[:, ~games.columns.str.contains("_DROP")]
 
 
@@ -274,10 +277,8 @@ def get_player_stats(player_id, seasons):
     return data[data["season"].isin(seasons + ["career"])]
 
 
-def save_player_data(player_id, team_id):
-    games = get_player_games(
-        player_id, team_id, ["2023-24", "2024-25"], opponent_object=False
-    )
+def save_player_data(player_id):
+    games = get_player_games(player_id, ["2023-24", "2024-25"], opponent_object=False)
     games.to_csv(f"cache/player/{player_id}_games.csv", index=False)
 
     stats = get_player_stats(player_id, ["2023-24", "2024-25"])
