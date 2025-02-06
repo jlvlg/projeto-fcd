@@ -19,7 +19,7 @@ interface Props {
   selectOpponent?: boolean;
 }
 
-const PlayerGameStatsTable = ({
+export const PlayerGameStatsTable = ({
   id,
   playerid,
   season,
@@ -27,7 +27,7 @@ const PlayerGameStatsTable = ({
 }: Props) => {
   const teamId = id ? parseInt(id, 10) : 0;
   const playerId = playerid ? parseInt(playerid, 10) : null;
-  const { loading, error, data } = useQuery<{ teams: { players: { games: Game[] }[] }[] }>(
+  const { loading, error, data } = useQuery<{ teams: { players: { name: string, games: Game[] }[] }[] }>(
     GET_PLAYER_GAME_STATS,
     {
       variables: { teamId, playerIds: [playerId], season },
@@ -63,12 +63,12 @@ const PlayerGameStatsTable = ({
 
   const summaryHeaders = selectOpponent
     ? [
-        { label: "Categoria" },
+        { label: "Total de Jogos por Categoria" },
         { label: "Total" },
         { label: `Contra ${selectedOpponent || "-"}` },
       ]
     : [
-        { label: "Categoria" },
+        { label: "Total de Jogos por Categoria" },
         { label: "Total" },
       ];
 
@@ -118,8 +118,8 @@ const PlayerGameStatsTable = ({
   return (
     <>
       <Typography variant="h6">Temporada atual</Typography>
+      <Typography variant="body2" fontSize="0.875rem" color="textSecondary">Jogador: {players[0].name}</Typography>
       <br/>
-
       {selectOpponent && (
         <Box display="flex" alignItems="center" gap={2} mb={3}>
           <Typography variant="h6">Adversário</Typography>

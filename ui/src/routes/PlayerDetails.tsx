@@ -24,7 +24,7 @@ export const PlayerDetails = () => {
     "Análise de Gumbel",
     "Regressão Linear",
     "Regressão Logística",
-    "GAMLSS"
+    "Gamlss"
   ];
   const drawerWidth = 240;
 
@@ -71,7 +71,10 @@ export const PlayerDetails = () => {
             />
           )}
           {selectedTab === 1 && (
-            <PlayerGameStatsTable id={id} playerid={playerid} season={season} />
+            <PlayerGameStatsTable 
+            id={id} 
+            playerid={playerid} 
+            season={season} />
           )}
           {selectedTab === 2 && (
             <PlayerGameStatsTable

@@ -18,7 +18,6 @@ export const Home = () => {
         textAlign: "center",
         color: "white",
         padding: 4,
-        minHeight: "100vh",
         background: "linear-gradient(135deg, #0d0d0d, #1a1a1a)",
       }}
     >

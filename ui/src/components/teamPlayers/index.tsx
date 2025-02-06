@@ -48,7 +48,7 @@ const TeamPlayersTable = ({ teamId, playerId }: Props) => {
     `${player.height.toFixed(2)} m`,
     `${player.weight.toFixed(2)} kg`,
     player.age,
-    player.experience === 0 ? "Novato" : player.experience,
+    player.experience,
     player.position,
     player.college || "N/A",
     player.salary ? `$${player.salary.toFixed(2).toLocaleString()}` : "N/A",
