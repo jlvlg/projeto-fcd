@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { Bar, Line } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Tooltip, Legend } from "chart.js";
 import { GET_GUMBLE_DATA } from "queries/getGumbelData";
 import { Box, Card, Typography, TextField, Button, Tabs, Tab } from "@mui/material";
@@ -116,8 +116,8 @@ const GumbelVisualization = ({ teamId, playerId, season }: Props) => {
         </Box>
       </Card>
       <Typography variant="body2" fontSize="0.875rem" color="textSecondary">Visualização das probabilidades de eventos com base no método de Gumbel, 
-        analisando a ocorrência de valores acima, abaixo, ou iguais a determinados pontos de referência, como pontos, rebotes e assistências. </Typography>
-
+        analisando a ocorrência de valores acima, abaixo, ou iguais a determinados pontos de referência, como pontos, rebotes e assistências. 
+      </Typography>
 
       <Tabs
         value={tabIndex}
@@ -144,7 +144,7 @@ const GumbelVisualization = ({ teamId, playerId, season }: Props) => {
         <Typography variant="h6" sx={{ marginBottom: 1 }}>
           Probabilidade Menor Que
         </Typography>
-        <Bar data={probLessThanData} />
+        <Line data={probLessThanData} />
       </Box>
 
       <Box sx={{ width: "100%", margin: "auto", marginTop: 3 }}>
@@ -158,7 +158,7 @@ const GumbelVisualization = ({ teamId, playerId, season }: Props) => {
         <Typography variant="h6" sx={{ marginBottom: 1 }}>
           Probabilidade Menor ou Igual a
         </Typography>
-        <Bar data={probLessThanOrEqualToData} />
+        <Line data={probLessThanOrEqualToData} />
       </Box>
     </Box>
   );
