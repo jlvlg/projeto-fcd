@@ -169,7 +169,7 @@ def train_poisson_gam(data):
     return train_regression(PoissonGAM, data, targets)
 
 
-def linear_helper(y_pred, y_true, op):
+def regression_helper(y_pred, y_true, op):
     comparison = op(y_pred)
     cm = confusion_matrix(op(y_true), comparison)
     return {
@@ -184,43 +184,44 @@ def linear_helper(y_pred, y_true, op):
 def regression(model, player_id, column):
     y_pred = model[f"model_{column}"].predict(model["X_test"])
     y_true = model[f"y_{column}_test"]
-    stats = get_models(player_id)["data"]["stats"][stats["season"] == "career"]
+    stats = get_models(player_id)["data"]["stats"]
+    stats = stats[stats["season"] == "career"]
     return {
-        "greater_than_mean": linear_helper(
-            y_pred, y_true, lambda x: x > stats[f"mean_{column}"]
+        "greater_than_mean": regression_helper(
+            y_pred, y_true, lambda x: x > stats[f"mean_{column}"].iloc[0]
         ),
-        "less_than_or_equal_to_mean": linear_helper(
-            y_pred, y_true, lambda x: x <= stats[f"mean_{column}"]
+        "less_than_or_equal_to_mean": regression_helper(
+            y_pred, y_true, lambda x: x <= stats[f"mean_{column}"].iloc[0]
         ),
-        "greater_than_median": linear_helper(
-            y_pred, y_true, lambda x: x > stats[f"median_{column}"]
+        "greater_than_median": regression_helper(
+            y_pred, y_true, lambda x: x > stats[f"median_{column}"].iloc[0]
         ),
-        "less_than_or_equal_to_median": linear_helper(
-            y_pred, y_true, lambda x: x <= stats[f"median_{column}"]
+        "less_than_or_equal_to_median": regression_helper(
+            y_pred, y_true, lambda x: x <= stats[f"median_{column}"].iloc[0]
         ),
-        "greater_than_mode": linear_helper(
-            y_pred, y_true, lambda x: x > stats[f"mode_{column}"]
+        "greater_than_mode": regression_helper(
+            y_pred, y_true, lambda x: x > stats[f"mode_{column}"].iloc[0]
         ),
-        "less_than_or_equal_to_mode": linear_helper(
-            y_pred, y_true, lambda x: x <= stats[f"mode_{column}"]
+        "less_than_or_equal_to_mode": regression_helper(
+            y_pred, y_true, lambda x: x <= stats[f"mode_{column}"].iloc[0]
         ),
-        "greater_than_max": linear_helper(
-            y_pred, y_true, lambda x: x > stats[f"max_{column}"]
+        "greater_than_max": regression_helper(
+            y_pred, y_true, lambda x: x > stats[f"max_{column}"].iloc[0]
         ),
-        "less_than_or_equal_to_max": linear_helper(
-            y_pred, y_true, lambda x: x <= stats[f"max_{column}"]
+        "less_than_or_equal_to_max": regression_helper(
+            y_pred, y_true, lambda x: x <= stats[f"max_{column}"].iloc[0]
         ),
-        "greater_than_min": linear_helper(
-            y_pred, y_true, lambda x: x > stats[f"min_{column}"]
+        "greater_than_min": regression_helper(
+            y_pred, y_true, lambda x: x > stats[f"min_{column}"].iloc[0]
         ),
-        "less_than_or_equal_to_min": linear_helper(
-            y_pred, y_true, lambda x: x <= stats[f"min_{column}"]
+        "less_than_or_equal_to_min": regression_helper(
+            y_pred, y_true, lambda x: x <= stats[f"min_{column}"].iloc[0]
         ),
     }
 
 
 def gam_prob(model, column, x):
-    y_pred = model[f"model_{column}"].predict(model["X_test"][-1])[0]
+    y_pred = model[f"model_{column}"].predict(model["X_test"].iloc[-1].to_frame().T)[0]
     return poisson.pmf(x, y_pred)
 
 

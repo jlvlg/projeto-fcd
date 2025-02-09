@@ -91,12 +91,27 @@ type PlayerStats {
   season: String!
   gamesPlayed: Int!
   score: Int!
-  meanscore: Float!
+  meanScore: Float!
   assists: Int!
   meanAssists: Float!
   rebounds: Int!
   meanRebounds: Float!
   minutesPlayed: Float!
+  medianScore: Float!
+  modeScore: Float!
+  modeFrequencyScore: Float!
+  maxScore: Float!
+  minScore: Float!
+  medianAssists: Float!
+  modeAssists: Float!
+  modeFrequencyAssists: Float!
+  maxAssists: Float!
+  minAssists: Float!
+  medianRebounds: Float!
+  modeRebounds: Float!
+  modeFrequencyRebounds: Float!
+  maxRebounds: Float!
+  minRebounds: Float!
 }
 
 type AI {

@@ -1,14 +1,17 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { Box,} from "@mui/material";
 import { useQuery } from "@apollo/client";
-import SidebarMenu from "components/menu";
-import PlayerGameStatsTable from "components/playerGameStats";
-import { GET_PLAYER_DETAILS } from "queries/getPlayerDetails";
-import PlayerTeamGamesStats from "components/playerTeamGamesStats";
-import PlayerStatistics from "components/playerStatistics";
+import { Box } from "@mui/material";
 import ExtremeAnalysis from "components/gumbelVisualization";
 import { LoadingComponent } from "components/loading";
+import SidebarMenu from "components/menu";
+import PlayerGameStatsTable from "components/playerGameStats";
+import PlayerStatistics from "components/playerStatistics";
+import PlayerTeamGamesStats from "components/playerTeamGamesStats";
+import RegressionVisualization, {
+  RegressionMode,
+} from "components/regressionVisualization";
+import { GET_PLAYER_DETAILS } from "queries/getPlayerDetails";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 
 export const PlayerDetails = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -24,7 +27,8 @@ export const PlayerDetails = () => {
     "Análise de Gumbel",
     "Regressão Linear",
     "Regressão Logística",
-    "Gamlss"
+    "GAM Linear",
+    "GAM Poisson",
   ];
   const drawerWidth = 240;
 
@@ -71,10 +75,7 @@ export const PlayerDetails = () => {
             />
           )}
           {selectedTab === 1 && (
-            <PlayerGameStatsTable 
-            id={id} 
-            playerid={playerid} 
-            season={season} />
+            <PlayerGameStatsTable id={id} playerid={playerid} season={season} />
           )}
           {selectedTab === 2 && (
             <PlayerGameStatsTable
@@ -88,16 +89,19 @@ export const PlayerDetails = () => {
             <PlayerTeamGamesStats id={id} playerid={playerid} season={season} />
           )}
           {selectedTab === 4 && (
-            <ExtremeAnalysis teamId={Number(id)} playerId={playerId} season={season}  />
+            <ExtremeAnalysis teamId={Number(id)} playerId={playerId} />
           )}
           {selectedTab === 5 && (
-            <>Em Breve</>
+            <RegressionVisualization mode={RegressionMode.LINEAR} />
           )}
           {selectedTab === 6 && (
-            <>Em Breve 2</>
+            <RegressionVisualization mode={RegressionMode.LOGISTIC} />
           )}
           {selectedTab === 7 && (
-            <>Em Breve 3 </>
+            <RegressionVisualization mode={RegressionMode.GAMLINEAR} />
+          )}
+          {selectedTab === 8 && (
+            <RegressionVisualization mode={RegressionMode.GAMPOISSON} />
           )}
         </Box>
       </Box>

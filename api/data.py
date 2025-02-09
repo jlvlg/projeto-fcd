@@ -11,6 +11,7 @@ import shutil
 
 
 def get_teams():
+    sleep(0.5)
     return (
         endpoints.LeagueStandingsV3()
         .get_data_frames()[0]
@@ -26,18 +27,18 @@ def get_teams():
 
 
 def get_team_stats(team_id, seasons):
-    seasons = {
-        x: endpoints.TeamDashboardByGeneralSplits(team_id, season=x).get_data_frames()[
-            :2
-        ]
-        for x in seasons
-    }
-    [x[1].set_index("TEAM_GAME_LOCATION", inplace=True) for x in seasons.values()]
-    seasons["total"] = [
-        reduce(lambda x, y: x.add(y), (x[i] for x in seasons.values()))
-        for i in range(len(next(iter(seasons.values()))))
+    data = {}
+    for season in seasons:
+        sleep(0.5)
+        data[season] = endpoints.TeamDashboardByGeneralSplits(
+            team_id, season=season
+        ).get_data_frames()[:2]
+    [x[1].set_index("TEAM_GAME_LOCATION", inplace=True) for x in data.values()]
+    data["total"] = [
+        reduce(lambda x, y: x.add(y), (x[i] for x in data.values()))
+        for i in range(len(next(iter(data.values()))))
     ]
-    for x in seasons.values():
+    for x in data.values():
         x[0] = x[0].to_dict(orient="records")[0]
     return pd.DataFrame(
         [
@@ -74,26 +75,28 @@ def get_team_stats(team_id, seasons):
                 )
                 / y[1].loc["Home", "GP"],
             }
-            for x, y in seasons.items()
+            for x, y in data.items()
         ]
     )
 
 
 def get_games(seasons, team_id=None, player_id=None, opponent_object=True):
-    if team_id:
-        data = pd.concat(
-            endpoints.TeamGameLogs(
-                team_id_nullable=team_id, season_nullable=x
-            ).get_data_frames()[0]
-            for x in seasons
-        )
-    else:
-        data = pd.concat(
-            endpoints.PlayerGameLogs(
-                player_id_nullable=player_id, season_nullable=x
-            ).get_data_frames()[0]
-            for x in seasons
-        )
+    data = []
+    for season in seasons:
+        sleep(0.5)
+        if team_id:
+            data.append(
+                endpoints.TeamGameLogs(
+                    team_id_nullable=team_id, season_nullable=season
+                ).get_data_frames()[0]
+            )
+        else:
+            data.append(
+                endpoints.PlayerGameLogs(
+                    player_id_nullable=player_id, season_nullable=season
+                ).get_data_frames()[0]
+            )
+    data = pd.concat(data)
 
     return (
         data.assign(
@@ -180,6 +183,7 @@ def get_team_games(team_id, seasons, opponent_object=True):
 
 
 def get_players(team_id):
+    sleep(0.5)
     team = static_teams.find_team_name_by_id(team_id)
     nba = endpoints.CommonTeamRoster(team_id).get_data_frames()[0]
     pos = {
@@ -245,22 +249,24 @@ def get_players(team_id):
     )
 
 
-def get_player_games(player_id, seasons, opponent_object=True):
+def get_player_games(player_id, seasons, complete=True, opponent_object=True):
     games = get_games(seasons, player_id=player_id, opponent_object=opponent_object)
-    for team in games["team_id"].unique():
-        sleep(1)
-        team_games = get_team_games(team, seasons, opponent_object=False)
-        games = games.merge(team_games, on="id", how="left", suffixes=("", "_DROP"))
+    if complete:
+        for team in games["team_id"].unique():
+            team_games = get_team_games(team, seasons, opponent_object=False)
+            games = games.merge(team_games, on="id", how="left", suffixes=("", "_DROP"))
     return games.loc[:, ~games.columns.str.contains("_DROP")]
 
 
 def get_player_stats(player_id, seasons):
+    sleep(0.5)
     data = pd.concat(
         endpoints.PlayerCareerStats(player_id=player_id).get_data_frames()[:2]
     )
     data = pd.DataFrame(
         [
             {
+                "player_id": x["PLAYER_ID"],
                 "season": x["SEASON_ID"] if pd.notna(x["SEASON_ID"]) else "career",
                 "games_played": x["GP"],
                 "score": x["PTS"],
@@ -274,81 +280,79 @@ def get_player_stats(player_id, seasons):
             for _, x in data.iterrows()
         ]
     )
-    return data[data["season"].isin(seasons + ["career"])]
+    data = data[data["season"].isin(seasons + ["career"])]
 
-
-def save_player_data(player_id):
-    games = get_player_games(player_id, ["2023-24", "2024-25"], opponent_object=False)
-    games.to_csv(f"cache/player/{player_id}_games.csv", index=False)
-
-    stats = get_player_stats(player_id, ["2023-24", "2024-25"])
+    games = get_player_games(player_id, seasons, complete=False, opponent_object=False)
 
     new_columns = [
         "median_score",
         "mode_score",
         "mode_frequency_score",
-        "dev_score",
         "max_score",
         "min_score",
         "median_assists",
         "mode_assists",
         "mode_frequency_assists",
-        "dev_assists",
         "max_assists",
         "min_assists",
         "median_rebounds",
         "mode_rebounds",
         "mode_frequency_rebounds",
-        "dev_rebounds",
         "max_rebounds",
         "min_rebounds",
     ]
+
     for col in new_columns:
-        stats[col] = None
+        data[col] = None
 
     for season, group in games.groupby("season"):
-        season_index = stats[stats["season"] == season].index
+        season_index = data[data["season"] == season].index
         if not season_index.empty:
-            stats.loc[season_index, new_columns] = [
+            data.loc[season_index, new_columns] = [
                 group["score"].median(),
                 (mode_points := group["score"].mode()[0]),
                 group["score"].value_counts()[mode_points],
-                group["score"].std(),
                 group["score"].max(),
                 group["score"].min(),
                 group["assists"].median(),
                 (mode_assists := group["assists"].mode()[0]),
                 group["assists"].value_counts()[mode_assists],
-                group["assists"].std(),
                 group["assists"].max(),
                 group["assists"].min(),
                 group["rebounds"].median(),
                 (mode_rebounds := group["rebounds"].mode()[0]),
                 group["rebounds"].value_counts()[mode_rebounds],
-                group["rebounds"].std(),
                 group["rebounds"].max(),
                 group["rebounds"].min(),
             ]
-    stats.loc[stats[stats["season"] == "career"].index, new_columns] = [
+    data.loc[data[data["season"] == "career"].index, new_columns] = [
         games["score"].median(),
         (mode_points := games["score"].mode()[0]),
         games["score"].value_counts()[mode_points],
-        games["score"].std(),
         games["score"].max(),
         games["score"].min(),
         games["assists"].median(),
         (mode_assists := games["assists"].mode()[0]),
         games["assists"].value_counts()[mode_assists],
-        games["assists"].std(),
         games["assists"].max(),
         games["assists"].min(),
         games["rebounds"].median(),
         (mode_rebounds := games["rebounds"].mode()[0]),
         games["rebounds"].value_counts()[mode_rebounds],
-        games["rebounds"].std(),
         games["rebounds"].max(),
         games["rebounds"].min(),
     ]
+
+    return data
+
+
+def save_player_data(player_id):
+    games = get_player_games(
+        player_id, ["2023-24", "2024-25"], complete=False, opponent_object=False
+    )
+    games.to_csv(f"cache/player/{player_id}_games.csv", index=False)
+
+    stats = get_player_stats(player_id, ["2023-24", "2024-25"])
 
     stats.to_csv(f"cache/player/{player_id}_stats.csv", index=False)
     return games, stats
@@ -359,13 +363,10 @@ def save_data():
     Path("cache/team").mkdir(parents=True, exist_ok=True)
     Path("cache/player").mkdir(parents=True, exist_ok=True)
     get_teams().to_csv("cache/teams.csv", index=False)
-    sleep(1)
     get_team_stats(1610612741, ["2023-24", "2024-25"]).to_csv(
         "cache/team/stats.csv", index=False
     )
-    sleep(1)
     get_team_games(1610612741, ["2023-24", "2024-25"], opponent_object=False).to_csv(
         "cache/team/games.csv", index=False
     )
-    sleep(1)
     get_players(1610612741).to_csv("cache/team/players.csv", index=False)

@@ -1,14 +1,30 @@
 import { useQuery } from "@apollo/client";
+import {
+  Box,
+  Button,
+  Card,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from "@mui/material";
 import { GET_TEAM_PLAYERS } from "queries/getTeamPlayers";
-import { Box, Card, Typography, Button, CircularProgress, List, ListItem, ListItemText } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const CHICAGO_BULLS_ID = 1610612741;
-const CHICAGO_BULLS_IMAGE = "https://c4.wallpaperflare.com/wallpaper/171/7/742/basketball-michael-jordan-chicago-bulls-hd-wallpaper-preview.jpg";
+const CHICAGO_BULLS_IMAGE =
+  "https://c4.wallpaperflare.com/wallpaper/171/7/742/basketball-michael-jordan-chicago-bulls-hd-wallpaper-preview.jpg";
 
 export const Home = () => {
   const navigate = useNavigate();
-  const { data: playersData, loading: loading, error: error } = useQuery(GET_TEAM_PLAYERS, { variables: { teamIds: [CHICAGO_BULLS_ID] } });
+  const {
+    data: playersData,
+    loading: loading,
+    error: error,
+  } = useQuery(GET_TEAM_PLAYERS, {
+    variables: { teamIds: [CHICAGO_BULLS_ID] },
+  });
 
   const players = playersData?.teams?.[0]?.players || [];
 
@@ -25,7 +41,8 @@ export const Home = () => {
         Chicago Bulls
       </Typography>
       <Typography variant="h6" sx={{ mt: 2, mb: 3 }}>
-        Um dos times mais icônicos da NBA, conhecido por sua história vitoriosa e por lendas como Michael Jordan.
+        Um dos times mais icônicos da NBA, conhecido por sua história vitoriosa
+        e por lendas como Michael Jordan.
       </Typography>
 
       <Box
@@ -45,19 +62,26 @@ export const Home = () => {
             boxShadow: 5,
             display: "flex",
             flexDirection: "column",
-            height: "500px", 
+            height: "500px",
           }}
         >
           <Box sx={{ flex: 1, display: "flex" }}>
             <img
               src={CHICAGO_BULLS_IMAGE}
               alt="Chicago Bulls"
-              style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "10px 10px 0 0" }}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "10px 10px 0 0",
+              }}
             />
           </Box>
           {loading && <CircularProgress color="inherit" />}
-          {error && <Typography color="error">Erro ao carregar os dados</Typography>}
-          </Card>
+          {error && (
+            <Typography color="error">Erro ao carregar os dados</Typography>
+          )}
+        </Card>
 
         <Card
           sx={{
@@ -68,14 +92,16 @@ export const Home = () => {
             boxShadow: 5,
             display: "flex",
             flexDirection: "column",
-            height: "500px", 
+            height: "500px",
           }}
         >
           <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
             Jogadores
           </Typography>
           {loading && <CircularProgress color="inherit" />}
-          {error && <Typography color="error">Erro ao carregar os jogadores</Typography>}
+          {error && (
+            <Typography color="error">Erro ao carregar os jogadores</Typography>
+          )}
           {!loading && !error && (
             <Box sx={{ overflow: "hidden", flex: 1 }}>
               <List
@@ -90,18 +116,31 @@ export const Home = () => {
                   <ListItem
                     key={player.id}
                     component="div"
-                    sx={{ borderBottom: "1px solid #333", "&:last-child": { borderBottom: "none" } }}
-                    onClick={() => navigate(`/teams/${CHICAGO_BULLS_ID}/${player.id.toString()}`)}
+                    sx={{
+                      borderBottom: "1px solid #333",
+                      cursor: "pointer",
+                      "&:last-child": { borderBottom: "none" },
+                    }}
+                    onClick={() =>
+                      navigate(
+                        `/teams/${CHICAGO_BULLS_ID}/${player.id.toString()}`
+                      )
+                    }
                   >
                     <ListItemText
                       primary={
-                        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#fff" }}>
+                        <Typography
+                          variant="h6"
+                          sx={{ fontWeight: "bold", color: "#fff" }}
+                        >
                           {player.name}
                         </Typography>
                       }
                       secondary={
                         <Typography variant="body2" sx={{ color: "#bbb" }}>
-                          {player.position} | {player.age} anos | {player.height.toFixed(2)}m | {player.weight.toFixed(2)}kg
+                          {player.position} | {player.age} anos |{" "}
+                          {player.height.toFixed(2)}m |{" "}
+                          {player.weight.toFixed(2)}kg
                         </Typography>
                       }
                     />
@@ -122,7 +161,12 @@ export const Home = () => {
         >
           Ver Detalhes do Time
         </Button>
-        <Button variant="outlined" color="secondary" sx={{ paddingX: 3, fontSize: "1rem" }} onClick={() => navigate("/teams")}>
+        <Button
+          variant="outlined"
+          color="secondary"
+          sx={{ paddingX: 3, fontSize: "1rem" }}
+          onClick={() => navigate("/teams")}
+        >
           Escolher Outro Time
         </Button>
       </Box>

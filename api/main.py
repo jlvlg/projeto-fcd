@@ -102,21 +102,25 @@ def resolve_linear_regression(aiparent, *_, column):
 @aitype.field("linearGAM")
 def resolve_linear_gam(aiparent, *_, column):
     model = ai.get_models(aiparent["player_id"])["gam"]["linear"]
-    return ai.regression(
-        model,
-        aiparent["player_id"],
-        column,
-    ) | {"column": column, "model": model}
+    return {
+        "regression": ai.regression(
+            model,
+            aiparent["player_id"],
+            column,
+        )
+    } | {"column": column, "model": model}
 
 
 @aitype.field("poissonGAM")
 def resolve_poisson_gam(aiparent, *_, column):
     model = ai.get_models(aiparent["player_id"])["gam"]["poisson"]
-    return ai.regression(
-        model,
-        aiparent["player_id"],
-        column,
-    ) | {"column": column, "model": model}
+    return {
+        "regression": ai.regression(
+            model,
+            aiparent["player_id"],
+            column,
+        )
+    } | {"column": column, "model": model}
 
 
 @aitype.field("logisticRegression")
