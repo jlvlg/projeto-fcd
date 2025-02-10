@@ -2,7 +2,8 @@
 O mais novo conselheiro de jogos da NBA com IA!
 
 # ⚙️ Requisitos
-python 3.11
+python
+node.js
 
 # ⬇️ Instalação
 * Clone o repositório git em sua máquina.
