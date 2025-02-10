@@ -3,6 +3,7 @@ O mais novo conselheiro de jogos da NBA com IA!
 
 # ⚙️ Requisitos
 python
+
 node.js
 
 # ⬇️ Instalação
